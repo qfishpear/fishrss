@@ -1,0 +1,110 @@
+KB = 1024
+MB = 1024**2
+GB = 1024**3
+TB = 1024**4
+SECOND = 1
+MINUTE = 60
+HOUR = 60 * 60
+DAY = 24 * 60 * 60
+"""
+filter_config模板：
+FILTER_CONFIG_TEMPLATE = {
+    #filter名称
+    "name": "redfilter",
+    #存储被ban用户列表的文件，不ban填None，手动编辑此文件时请一行一个用户名
+    "banlist" : "~/rss/ban_red.txt",
+    #允许的媒体类型，无限制填None
+    "media" : set(["CD", "Vinyl", "WEB"]),
+    #允许的格式，无限制填None
+    "format": set(["FLAC", "WAV"]),
+    #体积范围，单位Byte，如果不限制填None，样例：100MB-1024MB
+    "sizelim": (100 * MB, 1024 * MB),
+}
+"""
+
+# 所有填写的文件夹和文件请预先创建好，本程序不会自动创建它们，所有信息没有另外说的都是必填
+CONFIG = {
+    # log文件输出路径，本程序所有输出都会保存一份在这个log里
+    "log_file": "./filter.log",
+    # filter的通用设置
+    "filter" : {
+        # 从这个文件夹里读取.torrent，此文件夹应为irssi等工具的保存种子的文件夹
+        "source_dir" : "./tocheck",
+        # 满足filter条件的种子会被转存到这个文件夹，此文件夹应为bt客户端的监控文件夹
+        "dest_dir"   : "./watch",
+        # 对于未配置信息的r到的种子的行为，默认是接受（即认为是满足条件），如果不要接受请改成"reject"
+        "default_behavior" : "accept",
+    }, 
+    # dic 配置信息，如果不需要刷dic请将分割线1内整段注释掉
+    # ========================分割线1=============================
+    "dic":{
+        # 一个文件夹，保存曾经请求过的api回复，如果不需要可以填None
+        "api_cache_dir" : "./dic",
+        "cookies"       : {
+            "PHPSESSID" : "xxxxxxxxxxxxxxxxxxxxxxxx",
+            "session"   : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        # authkey和torrent_pass请随意复制一个种子链接，里面有
+        "authkey"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "torrent_pass"  : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        # filter_config的填写请参考上面的模板FILTER_CONFIG_TEMPLATE和给出的样例
+        "filter_config" : {
+            "name"    : "dicfilter",
+            "banlist" : "./ban_dic.txt",
+            "media"   : None,
+            "format"  : set(["FLAC"]),
+            "sizelim" : None,
+        },
+        # 体积在这个区间内时自动使用token，样例：100MB-1TB
+        "token_thresh": (100 * MB, 1 * TB),
+    },
+    # ========================分割线1=============================
+    # red 配置信息，如果不需要刷red请将分割线2内整段注释掉
+    # ========================分割线2=============================
+    # "red" : {
+    #     # 一个文件夹，保存曾经请求过的api回复，如果不需要自动拉黑脚本可以填None
+    #     "api_cache_dir" : "./red",
+    #     # cookie/apikey二选一用于鉴权，推荐使用api_key，如果非要使用cookie的话，请将api_key填为None
+    #     # "cookies"       : {
+    #     #     "session": "xxxxxxxxxxxx"
+    #     # },
+    #     "api_key"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     # authkey和torrent_pass请随意复制一个种子链接，里面有
+    #     "authkey"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     "torrent_pass"  : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     # filter_config的填写请参考上面的模板FILTER_CONFIG_TEMPLATE和给出的样例
+    #     "filter_config" : {
+    #         "name"    : "redfilter",
+    #         "banlist" : "./ban_red.txt",
+    #         "media"   : set(["CD"]),
+    #         "format"  : set(["FLAC"]),
+    #         "sizelim" : (100 * MB, 1024 * MB)
+    #     },
+    #     # 体积在这个区间内时自动使用token
+    #     "token_thresh": (800 * MB, 2 * GB),
+    #     # 自动ban人脚本条件，不需要的可以不填
+    #     "autoban" : {
+    #         # 按ratio ban人的条件
+    #         "ratio" : [
+    #             # 以下3个条件表示当某个人发种个数超过count的时候，你的总ratio低于ratiolim则ban掉他
+    #             {"count":1, "ratiolim":0.2},
+    #             {"count":2, "ratiolim":0.4},
+    #             {"count":4, "ratiolim":0.55},
+    #         ],        
+    #         "ignore": {
+    #             # 统计ratio时忽略满足以下条件的种子：完成度低于min_progress，或已经发布时间超过max_time_added
+    #             "min_progress" : 0.3,
+    #             "max_time_added" : 36 * HOUR,
+    #         },
+    #     },
+    # },
+    # ========================分割线2=============================
+    # deluge客户端的登陆信息，如果不需要自动ban人脚本可以不填
+    "deluge" : {
+        "ip": "127.0.0.1",
+         #这个端口是deluge api的端口，而不是deluge暴露在外网监听bt连接的端口，在webui上点"connect manager"在host一栏上会显示这个端口
+        "port": 12345,
+        "username": "xxxxxxxxxxxxxx",
+        "password": "xxxxxxxxxxxxxx",
+    },
+}
