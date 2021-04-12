@@ -43,8 +43,7 @@ def get_name(raw):
     return info["name"]
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
-logging.basicConfig(level=logging.INFO, format=LOG_FORMAT,
-    filename="/home7/fishpear/rss/log.txt", filemode='a')
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 try:
     resp = requests.get("https://dicmusic.club/ajax.php?action=notifications", cookies=COOKIES, timeout=10)
     tlist = json.loads(resp.text)["response"]["results"]
