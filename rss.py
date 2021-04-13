@@ -84,6 +84,7 @@ for t in tlist[:10]:
             f.write(raw)
         cnt += 1
     except KeyboardInterrupt:
+        logging.info(traceback.format_exc())
         break
     except:
         logging.info("fail to download:")
