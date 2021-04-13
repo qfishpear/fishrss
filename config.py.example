@@ -12,14 +12,22 @@ FILTER_CONFIG_TEMPLATE = {
     #filter名称
     "name": "redfilter",
     #存储被ban用户列表的文件，不ban填None，手动编辑此文件时请一行一个用户名
-    "banlist" : "~/rss/ban_red.txt",
-    #允许的媒体类型，无限制填None
+    "banlist" : "/home7/fishpear/rss/ban_red.txt",
+    #允许的媒体类型，必须是set类型，无限制填None
     "media" : set(["CD", "Vinyl", "WEB"]),
-    #允许的格式，无限制填None
+    #允许的格式，必须是set类型，无限制填None
     "format": set(["FLAC", "WAV"]),
     #体积范围，单位Byte，如果不限制填None，样例：100MB-1024MB
-    "sizelim": (100 * MB, 1024 * MB),
+    "sizelim": (100 * 1024**2, 1024 * 1024**2),
 }
+"""
+
+"""
+逻辑简述：
+1. 从CONFIG["filter"]["source_dir"]里读取种子文件，读取完成后删除原种子
+2. 判断种子属于哪个tracker，目前支持red和dic，对于不支持的tracker根据CONFIG["filter"]["default_behavior"]的设定进行保存或忽略
+3. 根据对应tracker设定的过滤条件把满足条件的种子保存到CONFIG["filter"]["dest_dir"]里，不满足条件的会被忽略
+4. 如果种子符合CONFIG["red"或"dic"]["token_thresh"]的体积条件的话，则会使用token
 """
 
 # 所有填写的文件夹和文件请预先创建好，本程序不会自动创建它们，所有信息没有另外说的都是必填

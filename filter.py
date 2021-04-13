@@ -8,9 +8,11 @@ import bencode
 import hashlib
 import urllib
 from IPython import embed
-from config import CONFIG
 
+from config import CONFIG
 from common import logger, flush_logger
+from torrent_filter import TorrentFilter
+from gzapi import GazelleApi
 
 configured_trackers = set()
 try:
@@ -33,7 +35,13 @@ def get_info_hash(torrent):
     info_hash = sha.hexdigest()    
     return info_hash
 
-def _handle(*, fname, torrent, api, filter, token_thresh):
+def _handle(*,
+            fname : str,
+            torrent,
+            api : GazelleApi,
+            filter : TorrentFilter,
+            token_thresh : int,
+    ):
     h = get_info_hash(torrent)
     tid = urllib.parse.parse_qs(urllib.parse.urlparse(torrent["comment"]).query)["torrentid"][0]
     logger.info("new torrent from {}: {} torrentid={} infohash={}".format(api.apiname, fname, tid, h))

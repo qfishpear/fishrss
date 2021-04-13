@@ -1,0 +1,11 @@
+*.txt
+*.bak
+*.log
+*.torrent
+__pycache__/
+cache/
+tocheck/
+watch/
+rss_dic.py
+rss_opencd.py
+config.py
