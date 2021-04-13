@@ -32,7 +32,7 @@ logger.info("autoban: deluge is connected: {}".format(client.connected))
 assert client.connected
 
 # 1. 从deluge获取必要信息
-tlist = list(client.core.get_torrents_status({}, ["hash", "ratio", "progress", "total_size", "time_added", "comment"]).values())
+tlist = list(client.core.get_torrents_status({}, ["hash", "name", "ratio", "progress", "total_size", "time_added", "comment"]).values())
 # 2. 按uploader分类
 uploaders = defaultdict(lambda: list())
 now = time.time()
@@ -62,7 +62,13 @@ for uploader, torrents in uploaders.items():
             if len(torrents) >= cond["count"] and ratio < cond["ratiolim"]:
                 bannedusers.add(uploader)
                 logger.info("new user banned: {} #torrents: {} ratio: {:.3f} {:.3f}GB/{:.3f}GB".format(
-                    uploader, len(torrents), ratio, total_ul/1024**3, total_size/1024**3))
+                    uploader, len(torrents), ratio, total_ul/1024**3, total_size/1024**3
+                ))
+                for t in torrents:
+                    logger.info("related torrents: {} ratio: {:.3f} {:.1f}MB/{:.1f}MB".format(
+                        t[b"name"].decode("utf-8"), t[b"ratio"], 
+                        t[b"ratio"] * t[b"total_size"] / 1024**2, t[b"total_size"] / 1024**2
+                    ))
                 break
 with open(banlist, "w") as f:
     for user in bannedusers:

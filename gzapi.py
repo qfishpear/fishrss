@@ -29,7 +29,7 @@ class GazelleApi(object):
         cache_dir=None,
         cookies=None,
         headers=None,
-        timeout=10
+        timeout=10,
     ):
         self.logger = logger
         self.apiname = apiname
@@ -42,9 +42,12 @@ class GazelleApi(object):
         if cache_dir is not None:
             assert os.path.exists(cache_dir), "{}的api cache dir文件夹不存在：{}".format(apiname, cache_dir)
         else:
-            self.logger("警告：{}未配置api cache dir".format(apiname))
+            self.logger.warning("{}未配置api cache dir".format(apiname))
 
-    def _query(self, url, params):
+    """
+    此函数仅保证返回是一个dict，且至少含有"status"一个key
+    """
+    def _query(self, url: str, params: dict) -> dict:
         if self.cache_dir != None:
             fname = "{}.json".format(urllib.parse.urlencode(params).replace("&", "_"))
             cache_file = os.path.join(self.cache_dir, fname)
@@ -108,6 +111,12 @@ class REDApi(GazelleApi):
             "action": "torrent",
             "id": tid,
         })
+    
+    def query_gid(self, gid):
+        return self.query(params={
+            "action": "torrentgroup", 
+            "id": gid,
+        })
 
     def get_dl_url(self, tid):
         return "https://redacted.ch/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
@@ -119,10 +128,9 @@ class REDApi(GazelleApi):
 class DICApi(GazelleApi):
 
     def __init__(self, *, authkey, torrent_pass, apikey=None, **kwargs):
-        headers = requests.utils.default_headers()
         self.authkey = authkey
         self.torrent_pass = torrent_pass
-        super().__init__(apiname="dic", headers=headers, timer=Timer(5, 10.5), **kwargs)
+        super().__init__(apiname="dic", timer=Timer(5, 10.5), **kwargs)
 
     def query(self, params):
         return super()._query(url="https://dicmusic.club/ajax.php", params=params)

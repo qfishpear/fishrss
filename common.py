@@ -9,12 +9,12 @@ from torrent_filter import TorrentFilter
 from gzapi import REDApi, DICApi
 from config import CONFIG
 
+# logger相关
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 logger = logging.getLogger("logger")
 logger.setLevel(logging.INFO)
-
 log_stream = open(CONFIG["log_file"], "a")
 filehandler = logging.StreamHandler(log_stream)
-LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 filehandler.formatter = logging.Formatter(fmt=LOG_FORMAT)
 filehandler.setLevel(logging.INFO)
 logger.addHandler(filehandler)
@@ -26,6 +26,7 @@ def flush_logger():
     os.fsync(log_stream)
     sys.stdout.flush()
 
+# api/filter相关
 if "red" in CONFIG.keys():
     _RED = CONFIG["red"]
     red_filter = TorrentFilter(
@@ -54,6 +55,7 @@ if "dic" in CONFIG.keys():
         cache_dir=_DIC["api_cache_dir"]
     )
 
+# 常数
 CONST = {
     "dic_url": "dicmusic.club",
     "dic_tracker": "tracker.dicmusic.club",
@@ -61,5 +63,6 @@ CONST = {
     "red_tracker": "flacsfor.me",
 }
 
+# 杂项，通用函数
 def get_domain_name_from_url(url):
     return urllib.parse.urlparse(url).netloc
