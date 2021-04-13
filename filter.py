@@ -51,7 +51,7 @@ def _handle(*, fname, torrent, api, filter, token_thresh):
             f.write(bencode.encode(torrent))
         tsize = js["response"]["torrent"]["size"]
         if token_thresh is not None and token_thresh[0] < tsize and tsize < token_thresh[1]:
-            fl_url = redapi.get_fl_url(tid)
+            fl_url = api.get_fl_url(tid)
             logger.info("getting fl:{}".format(fl_url))
             requests.get(fl_url)
 
