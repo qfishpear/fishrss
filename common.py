@@ -1,16 +1,9 @@
-import requests
-import xmltodict
-import datasize
 import os
 import sys
 import logging
-import hashlib
 import traceback
-import time
 import base64
-import json
 import urllib
-from IPython import embed
 
 from torrent_filter import TorrentFilter
 from gzapi import REDApi, DICApi
@@ -60,3 +53,13 @@ if "dic" in CONFIG.keys():
         logger=logger,
         cache_dir=_DIC["api_cache_dir"]
     )
+
+CONST = {
+    "dic_url": "dicmusic.club",
+    "dic_tracker": "tracker.dicmusic.club",
+    "red_url": "redacted.ch",
+    "red_tracker": "flacsfor.me",
+}
+
+def get_domain_name_from_url(url):
+    return urllib.parse.urlparse(url).netloc
