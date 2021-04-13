@@ -38,11 +38,11 @@ class TorrentFilter(object):
         tinfo = response["torrent"]
         ginfo = response["group"]
         self.logger.info("uploader: {} media: {} format: {} releasetype: {} size: {:.1f}MB".format(
-            tinfo["username"], 
-            tinfo["media"], 
-            ginfo["releaseType"],
+            tinfo["username"],
+            tinfo["media"],
             tinfo["format"],
-            tinfo["size"] / 1024**2
+            ginfo["releaseType"],
+            tinfo["size"] / 1024**2,
         ))
         if self.config["banlist"] is not None:
             with open(self.config["banlist"], "r") as f:
@@ -55,9 +55,10 @@ class TorrentFilter(object):
         if self.config["format"] is not None:
             if tinfo["format"] not in self.config["format"]:
                 return "wrong format"
-        if tinfo["size"] < self.config["sizelim"][0]:
-            return "size too small"
-        if tinfo["size"] > self.config["sizelim"][1]:
-            return "size too big"
+        if self.config["sizelim"] is not None:
+            if tinfo["size"] < self.config["sizelim"][0]:
+                return "size too small"
+            if tinfo["size"] > self.config["sizelim"][1]:
+                return "size too big"
         return "accept"
 
