@@ -23,8 +23,8 @@ TORRENT_PASS = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 FL_THRESHOLD = 100 * 1024**3 # 100GB
 # 存储rss出来的种子的文件夹：
 DOWNLOAD_DIR = "./watch/"
-# 存储rss的log：
-DOWNLOAD_LOG = "./downloaded.log"
+# 存储rss过的种子链接的文件：
+DOWNLOADED_URLS = "./downloaded_urls.txt"
 #============================================================================
 
 
@@ -51,11 +51,11 @@ except:
     logging.info("fail to read from RSS url")
     logging.info(traceback.format_exc())
     exit()
-if not os.path.exists(DOWNLOAD_LOG):
-    logging.info("log file doesn't exist, create new one: {}".format(DOWNLOAD_LOG))
-    with open(DOWNLOAD_LOG, "w") as f:
+if not os.path.exists(DOWNLOADED_URLS):
+    logging.info("downloaded file doesn't exist, create new one: {}".format(DOWNLOADED_URLS))
+    with open(DOWNLOADED_URLS, "w") as f:
         f.write("downloaded urls:\n")
-with open(DOWNLOAD_LOG, "r") as f:
+with open(DOWNLOADED_URLS, "r") as f:
     downloaded = set([line.strip() for line in f])
 if not os.path.exists(DOWNLOAD_DIR):
     logging.info("torrent directory doesn't exist, create new one: {}".format(DOWNLOAD_DIR))
@@ -73,12 +73,12 @@ for t in tlist[:10]:
     else:
         dl_url = dl_url_raw
     try:
-        logging.info("download {}".format(dl_url))
+        logging.info("download {}".format(dl_url_raw))
         resp = requests.get(dl_url, headers=HEADERS, timeout=120)
         raw = resp.content
         h = get_info_hash(raw)
         logging.info("hash={}".format(h))
-        with open(DOWNLOAD_LOG, "a") as f:
+        with open(DOWNLOADED_URLS, "a") as f:
             f.write("{}\n".format(dl_url_raw))
         with open(os.path.join(DOWNLOAD_DIR, "{}.torrent".format(get_name(raw))), "wb") as f:
             f.write(raw)

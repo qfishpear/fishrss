@@ -1,6 +1,8 @@
 # irssi增强脚本和自动拉黑脚本
 本脚本主要目的是对irssi拿到的种子进行额外的过滤以及智能使用令牌，目前仅适用于dic和red，对bt客户端没有要求
+
 自动拉黑脚本仅支持red(dic懒得写了，反正应该用不到)且仅支持deluge客户端
+
 所有涉及到筛选的逻辑（选种，ban人，使用令牌）可用的逻辑我写的比较简略，如果大家有建议或者需求可以告诉我我加进去，当然，选种部分的筛选逻辑其实许多完全可以在irssi里筛过了，其实我写的有点多余哈哈。
 
 ## 功能
@@ -10,18 +12,26 @@
 * 自动拉黑低分享率种子的发布者(仅针对red)
 
 ## 原理
-种子里的comment信息中有种子的torrentid，根据这个id调用网站api查询完整的信息，然后进行过滤，由于调用api需要时间所以会比纯irssi有更多延迟
+种子里的comment信息中有种子的torrentid，根据这个id调用网站api查询完整的信息，然后进行过滤
+
+由于调用api需要时间所以会比纯irssi有更多延迟：在我seedhost机器上，海豚会增加1秒左右的延迟，red会增加至少0.5秒左右的延迟，因此对于要r光速种的情况不适用此脚本
 
 通过检查deluge客户端获取种子的ratio，对比api得到的发布者信息进行自动拉黑
 
 ## 依赖
 仅支持python3，安装依赖：
 ```
-pip3 install bencode.py ipython requests datasize deluge-client ipython
+pip3 install bencode.py ipython requests datasize deluge-client
 ```
 
 ## 种子过滤
-首先你需要将config.py.example复制一份为config.py然后按照里面的提示填写，并创建好所有已填写的文件/文件夹，然后运行
+首先你需要将`config.py.example`复制一份为`config.py`
+```
+cp config.py.example config.py
+```
+然后按照`config.py`里面的提示填写，并创建好所有已填写的文件/文件夹
+
+然后运行
 ```
 python3 filter.py
 ```
@@ -51,7 +61,7 @@ python3 filter.py
 ```
 
 ## 自动拉黑
-同样需要编辑config.py中相关的部分，设定拉黑条件，然后运行
+同样需要编辑`config.py`中相关的部分，设定拉黑条件，然后运行
 ```
 python3 autoban.py
 ```
