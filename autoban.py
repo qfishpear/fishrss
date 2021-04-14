@@ -46,11 +46,13 @@ for t in tlist:
         if t[b"progress"] / 100 >= AUTOBAN["ignore"]["min_progress"] and \
            now - t[b"time_added"] < AUTOBAN["ignore"]["max_time_added"]:
             uploaders[js["response"]["torrent"]["username"]].append(t)
+uploaders = list(uploaders.items())
+uploaders.sort(key=lambda kv: max([t[b"time_added"] for t in kv[1]]))
 
 # 3. 根据规则添加ban人
 with open(banlist, "r") as f:
     bannedusers = set([line.strip() for line in f])    
-for uploader, torrents in uploaders.items():
+for uploader, torrents in uploaders:
     if uploader not in bannedusers:
         total_ul = sum([t[b"total_size"] * t[b"ratio"] * t[b"progress"] / 100 for t in torrents])
         total_size = sum([t[b"total_size"] * t[b"progress"] / 100 for t in torrents])
@@ -71,7 +73,7 @@ for uploader, torrents in uploaders.items():
                     ))
                 break
 with open(banlist, "w") as f:
-    for user in bannedusers:
+    for user in sorted(list(bannedusers)):
         if len(user) > 1:
             f.write(user+"\n")
 logger.info("{} user banned in total".format(len(bannedusers)))

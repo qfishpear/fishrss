@@ -89,11 +89,13 @@ for t in tlist:
     info.update(extra_info)
     torrent_infos.append(info)
 
-first_keys = ["time_added", "tracker", "name", "ratio"]
+first_keys = ["tracker", "ratio", "uploaded", "size"]
+last_keys = ["time_added", "hash", "name"]
 keys = functools.reduce(lambda x,y: x.union(y), [set(info.keys()) for info in torrent_infos], set())
-keys = first_keys + list(set(keys) - set(first_keys))
+keys = first_keys + list(set(keys) - set(first_keys) - set(last_keys)) + last_keys
 empty = {key:"" for key in keys}
 print("\t".join(keys))
+torrent_infos.sort(key=lambda info:info["time_added"])
 for info in torrent_infos:
     complete_info = empty.copy()
     complete_info.update(info)
