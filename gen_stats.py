@@ -28,11 +28,10 @@ client = deluge_client.DelugeRPCClient(DELUGE["ip"], DELUGE["port"], DELUGE["use
 client.connect()
 logger.info("gen_stats: deluge is connected: {}".format(client.connected))
 
-tlist = list(client.core.get_torrents_status({}, [
+tlist = list(client.core.get_torrents_status({"state":"Seeding"}, [
     "hash",
     "name",
     "ratio",
-    "progress",
     "total_size",
     "time_added",
     "comment",
@@ -74,8 +73,6 @@ def gen_extra_info(t):
 torrent_infos = []
 
 for t in tlist:
-    if t[b"progress"] != 100:
-        continue
     info = {
         "name" : t[b"name"].decode("utf-8"),
         "ratio" : t[b"ratio"],

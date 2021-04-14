@@ -59,17 +59,18 @@ for uploader, torrents in uploaders:
         ratio = total_ul / total_size
         if args.stats:
             logger.info("uploader: {} #torrents: {} ratio: {:.3f} {:.3f}GB/{:.3f}GB".format(
-                uploader, len(torrents), ratio, total_ul/1024**3, total_size/1024**3))
+                uploader, len(torrents), ratio, total_ul / 1024**3, total_size / 1024**3))
         for cond in AUTOBAN["ratio"]:
             if len(torrents) >= cond["count"] and ratio < cond["ratiolim"]:
                 bannedusers.add(uploader)
                 logger.info("new user banned: {} #torrents: {} ratio: {:.3f} {:.3f}GB/{:.3f}GB".format(
-                    uploader, len(torrents), ratio, total_ul/1024**3, total_size/1024**3
+                    uploader, len(torrents), ratio, total_ul / 1024**3, total_size / 1024**3
                 ))
                 for t in torrents:
                     logger.info("related torrents: {} ratio: {:.3f} {:.1f}MB/{:.1f}MB".format(
                         t[b"name"].decode("utf-8"), t[b"ratio"], 
-                        t[b"ratio"] * t[b"total_size"] / 1024**2, t[b"total_size"] / 1024**2
+                        t[b"ratio"] * t[b"total_size"] * t[b"progress"] / 100 / 1024**2, 
+                        t[b"total_size"] * t[b"progress"] / 100 / 1024**2,
                     ))
                 break
 with open(banlist, "w") as f:
