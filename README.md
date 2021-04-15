@@ -18,6 +18,9 @@ pip3 install bencode.py ipython requests datasize deluge-client
 ```
 
 ## 种子过滤
+
+警告：种子过滤本身有延迟，所以如果发种人irssi发种或发光速种的话可能导致ratio颗粒无收，配置前请考虑清楚。
+
 首先你需要将`config.py.example`复制一份为`config.py`
 ```
 cp config.py.example config.py
