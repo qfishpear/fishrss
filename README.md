@@ -24,6 +24,14 @@ python3 --version
 sudo pip3 install bencode.py ipython requests datasize deluge-client
 ```
 
+## 下载本脚本
+
+in case你不知道怎么下载：
+```
+git clone https://github.com/qfishpear/fishrss.git
+cd fishrss/
+```
+
 ## 填写配置信息
 
 首先你需要将`config.py.example`复制一份为`config.py`
@@ -33,6 +41,8 @@ cp config.py.example config.py
 然后按照`config.py`里面的提示填写，并创建好所有已填写的文件/文件夹。
 
 所有路径可以填写相对路径，但是如果要crontab等方式运行，填写绝对路径更为保险
+
+填写路径的时候，如果是Windows，依然建议使用左斜杠`/`而非右斜杠`\`作为路径的分隔符，除非你知道自己在写什么。
 
 ### 我应该填写哪些信息
 
