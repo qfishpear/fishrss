@@ -16,8 +16,11 @@ client.connect()
 logger.info("remove_unregistered: deluge is connected: {}".format(client.connected))
 
 tlist = list(client.core.get_torrents_status({"state":"Downloading"}, ["hash", "name", "tracker_status"]).values())
+cnt = 0
 for t in tlist:
     if "Unregistered torrent" in t[b"tracker_status"].decode("utf-8"):
         logger.info("removing torrent \"{}\" reason: \"{}\"".format(
             t[b"name"].decode("utf-8"), t[b"tracker_status"].decode("utf-8")))
         client.core.remove_torrent(t[b"hash"], True)
+        cnt += 1
+logger.info("{} torrents removed".format(cnt))

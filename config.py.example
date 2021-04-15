@@ -25,6 +25,7 @@ FILTER_CONFIG_TEMPLATE = {
 
 """
 种子过滤功能`filter.py`与配置填写相关的逻辑简述：
+太长不看：从source_dir读取种子，满足要求的转存到dest_dir里
 1. 从文件夹CONFIG["filter"]["source_dir"]里读取种子文件，读取完成后删除原种子
 2. 判断种子属于哪个tracker，目前支持red和dic
 3. 根据对应tracker设定的过滤条件CONFIG["red"或"dic"]["filter_config"]把满足条件的种子保存到CONFIG["filter"]["dest_dir"]里，不满足条件的会被忽略。
@@ -67,8 +68,9 @@ CONFIG = {
             "format"  : set(["FLAC"]),
             "sizelim" : None,
         },
-        # 体积在这个区间内时自动使用token，样例：100MB-1TB
-        "token_thresh": (100 * MB, 1 * TB),
+        # 体积在这个区间内时自动使用令牌，样例：100MB-2GB，如果不想使用令牌请填一个非法的区间，比如(0,-1)
+        # 注意，即使令牌用完，本脚本依然会继续下载种子，此时等于下黑种，请关注令牌余量
+        "token_thresh": (100 * MB, 2 * GB),
     },
     # ========================分割线1=============================
     # red 配置信息，如果不需要刷red请将分割线2内整段注释掉（默认是注释掉的）
@@ -92,10 +94,12 @@ CONFIG = {
     #         "name"    : "redfilter",
     #         "banlist" : "./ban_red.txt",
     #         "media"   : set(["CD"]),
-    #         "format"  : set(["FLAC"]),
+    #         "format"  : None,
     #         "sizelim" : (100 * MB, 1024 * MB)
     #     },
-    #     # 体积在这个区间内时自动使用token
+    #     # 体积在这个区间内时自动使用token，样例：800MB-2GB，如果不想使用token请填一个非法的区间，比如(0,-1)
+    #     # 注意1：red的token使用规则不支持大于2GB的种子，体积上限不要设超过2GB
+    #     # 注意2：即使token用完，本脚本依然会继续下载种子，此时等于下黑种，请关注token余量
     #     "token_thresh": (800 * MB, 2 * GB),
     #     # 自动ban人脚本条件，不需要的可以不填
     #     "autoban" : {

@@ -51,16 +51,20 @@ def _handle(*,
         return 
     check_result = filter.check_json_response(js)
     if check_result != "accept":
+        # 不满足条件
         logger.info("reject: {}".format(check_result))
     else:
+        # 满足条件，转存种子
         logger.info("accept")
         dest_path = os.path.join(CONFIG["filter"]["dest_dir"], fname)
         with open(dest_path, "wb") as f:
             f.write(bencode.encode(torrent))
+        # 根据体积限制使用令牌
         tsize = js["response"]["torrent"]["size"]
         if token_thresh is not None and token_thresh[0] < tsize and tsize < token_thresh[1]:
             fl_url = api.get_fl_url(tid)
             logger.info("getting fl:{}".format(fl_url))
+            # 因为种子已转存，FL链接下载下来的种子会被丢弃
             requests.get(fl_url)
 
 def handle_red(fname, torrent):    

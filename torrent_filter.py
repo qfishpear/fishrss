@@ -15,20 +15,18 @@ class TorrentFilter(object):
         self.logger = logger
         #sanity check
         for key in set(TorrentFilter.FILTER_CONFIG_TEMPLATE.keys()) - set(config.keys()):
-            assert False, "配置错误：缺少{}".format(key)
+            assert False, "filter_config配置错误：缺少{}".format(key)
         for key in set(config.keys()) - set(TorrentFilter.FILTER_CONFIG_TEMPLATE.keys()):
-            assert False, "配置错误：多于的配置项{}".format(key)
+            assert False, "filter_config配置错误：多余的配置项{}".format(key)
         if config["banlist"] is not None:
-            assert os.path.exists(config["banlist"]), "配置错误：被ban用户列表文件{}不存在".format(config["banlist"])
-        if config["media"] is not None:
-            assert type(config["media"]) is set, "配置错误：媒体类型(media)应当是集合或者None"
-        if config["media"] is not None:
-            assert config["format"] is None or type(config["format"]) is set, \
-                "配置错误：格式类型{}应当是集合或者None".format(config["media"])
+            assert os.path.exists(config["banlist"]), "filter_config配置错误：被ban用户列表文件{}不存在".format(config["banlist"])
+        assert config["media"] is None or type(config["media"]) is set, \
+            "filter_config配置错误：媒体类型(media)应当是集合或者None，而不是{}".format(config["media"])
+        assert config["format"] is None or type(config["format"]) is set, \
+            "filter_config配置错误：格式类型(format)应当是集合或者None，而不是{}".format(config["media"])
         if config["sizelim"] is not None:
-            assert type(config["sizelim"][0]) is int and type(config["sizelim"][1]) is int and \
-                   0 < config["sizelim"][0] and config["sizelim"][0] < config["sizelim"][1],  \
-                    "配置错误：体积范围[{},{}]应当是正整数区间".format(config["sizelim"][0], config["sizelim"][1])
+            assert config["sizelim"] is tuple and len(config["sizelim"]) == 2, \
+                "filter_config配置错误：体积范围(sizelim)应当是一个二元组(x,y)或者None，而不是{}".format(config["sizelim"])
     
     def check_json_response(self, js: dict):
         self.logger.info("{}: checking".format(self.config["name"]))
