@@ -100,7 +100,10 @@ def work():
                 raw = f.read()
             os.remove(tpath)
             torrent = bencode.decode(raw)
-            source = torrent["info"]["source"]
+            if "source" not in torrent["info"].keys():
+                source = None
+            else:
+                source = torrent["info"]["source"]
             if source == "RED" and "red" in configured_trackers:
                 handle_red(fname, torrent)
             elif source == "DICMusic" and "dic" in configured_trackers:

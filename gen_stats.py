@@ -38,6 +38,9 @@ tlist = list(client.core.get_torrents_status({"state":"Seeding"}, [
     "tracker",
 ]).values())
 
+"""
+从网站api获取更多信息
+"""
 def gen_extra_info(t):
     tracker_url = urllib.parse.urlparse(t[b"tracker"].decode("utf-8")).netloc
     if "red" in configured_trackers and tracker_url == CONST["red_tracker"]:
