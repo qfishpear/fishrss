@@ -5,6 +5,12 @@ import json
 import urllib
 import traceback
 import logging
+"""
+所有api参数中的
+tid表示torrentid种子id
+gid表示groupid种子组id，也即种子链接中id=后面的那个id
+uid表示账号id
+"""
 
 # 提供一个计时器，每次wait会等待直到前count次wait之后的interval秒
 class Timer(object):
@@ -47,8 +53,8 @@ class GazelleApi(object):
     """
     此函数仅保证返回是一个dict，且至少含有"status"一个key
     """
-    def _query(self, url: str, params: dict) -> dict:
-        if self.cache_dir != None:
+    def _query(self, url: str, params: dict, use_cache=True) -> dict:
+        if self.cache_dir != None and use_cache:
             fname = "{}.json".format(urllib.parse.urlencode(params).replace("&", "_"))
             cache_file = os.path.join(self.cache_dir, fname)
             if os.path.exists(cache_file):
@@ -74,15 +80,6 @@ class GazelleApi(object):
                 json.dump(js, f)
         return js
 
-    def query_tid(self, tid):
-        pass
-
-    def get_dl_url(self, tid):
-        pass
-    
-    def get_fl_url(self, tid):
-        pass
-        
 
 class REDApi(GazelleApi):
 
@@ -97,26 +94,26 @@ class REDApi(GazelleApi):
         self.torrent_pass = torrent_pass
         super().__init__(apiname="red", headers=headers, timer=timer, **kwargs)
 
-    def query(self, params):
-        return super()._query(url="https://redacted.ch/ajax.php", params=params)
+    def query(self, params, **kwargs):
+        return super()._query(url="https://redacted.ch/ajax.php", params=params, **kwargs)
 
-    def query_hash(self, h):
+    def query_hash(self, h, **kwargs):
         return self.query(params={
             "action": "torrent",
             "hash": h.upper(),
-        })
+        }, **kwargs)
 
-    def query_tid(self, tid):
+    def query_tid(self, tid, **kwargs):
         return self.query(params={
             "action": "torrent",
             "id": tid,
-        })
+        }, **kwargs)
     
-    def query_gid(self, gid):
+    def query_gid(self, gid, **kwargs):
         return self.query(params={
             "action": "torrentgroup", 
             "id": gid,
-        })
+        }, **kwargs)
 
     def get_dl_url(self, tid):
         return "https://redacted.ch/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
@@ -132,19 +129,26 @@ class DICApi(GazelleApi):
         self.torrent_pass = torrent_pass
         super().__init__(apiname="dic", timer=Timer(5, 10.5), **kwargs)
 
-    def query(self, params):
-        return super()._query(url="https://dicmusic.club/ajax.php", params=params)
+    def query(self, params, **kwargs):
+        return super()._query(url="https://dicmusic.club/ajax.php", params=params, **kwargs)
 
-    def query_hash(self, h):
+    def query_hash(self, h, **kwargs):
         return self.query(params={
             "action": "torrent",
             "hash": h.upper(),
-        })
+        }, **kwargs)
 
-    def query_tid(self, tid):
+    def query_tid(self, tid, **kwargs):
         return self.query(params={
             "action": "torrent",
             "id": tid,
+        }, **kwargs)
+
+    def query_uploaded(self, uid, **kwargs):
+        return self.query(params={
+            "action":"user_torrents",
+            "id":50065,
+            "type":"uploaded",
         })
 
     def get_dl_url(self, tid):
