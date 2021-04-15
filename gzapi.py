@@ -75,7 +75,7 @@ class GazelleApi(object):
             self.logger.info(r.text)
             self.logger.info(traceback.format_exc())
             return {"status": "json decode failure"}
-        if self.cache_dir != None:
+        if self.cache_dir != None and use_cache:
             with open(cache_file, "w") as f:
                 json.dump(js, f)
         return js
