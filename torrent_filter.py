@@ -26,7 +26,7 @@ class TorrentFilter(object):
         assert config["format"] is None or type(config["format"]) is set, \
             "filter_config配置错误：格式类型(format)应当是集合或者None，而不是{}".format(json.dumps(config["media"]))
         if config["sizelim"] is not None:
-            assert config["sizelim"] is tuple and len(config["sizelim"]) == 2, \
+            assert type(config["sizelim"]) is tuple and len(config["sizelim"]) == 2, \
                 "filter_config配置错误：体积范围(sizelim)应当是一个二元组(x,y)或者None，而不是{}".format(json.dumps(config["sizelim"]))
     
     def check_json_response(self, js: dict):
