@@ -40,7 +40,7 @@ def _handle(*,
             torrent,
             api : GazelleApi,
             filter : TorrentFilter,
-            token_thresh : int,
+            token_thresh : int
     ):
     h = get_info_hash(torrent)
     tid = urllib.parse.parse_qs(urllib.parse.urlparse(torrent["comment"]).query)["torrentid"][0]

@@ -35,8 +35,7 @@ if "red" in CONFIG.keys():
     )
     redapi = REDApi(
         apikey=_RED["api_key"],
-        authkey=_RED["authkey"],
-        torrent_pass=_RED["torrent_pass"],
+        cookies=_RED["cookies"] if "cookies" in _RED.keys() else None,
         logger=logger,
         cache_dir=_RED["api_cache_dir"]
     )
@@ -48,9 +47,7 @@ if "dic" in CONFIG.keys():
         logger=logger
     )
     dicapi = DICApi(
-        authkey=_DIC["authkey"],
         cookies=_DIC["cookies"],
-        torrent_pass=_DIC["torrent_pass"],
         logger=logger,
         cache_dir=_DIC["api_cache_dir"]
     )

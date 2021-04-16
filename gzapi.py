@@ -32,10 +32,11 @@ class GazelleApi(object):
         logger:logging.Logger,
         apiname,
         timer,
+        api_url,
         cache_dir=None,
         cookies=None,
         headers=None,
-        timeout=10,
+        timeout=10
     ):
         self.logger = logger
         self.apiname = apiname
@@ -43,17 +44,31 @@ class GazelleApi(object):
         self.cookies = cookies
         self.headers = headers
         self.timer = timer
-        self.timeout = timeout        
+        self.timeout = timeout
+        self.api_url = api_url
         # sanity check
         if cache_dir is not None:
-            assert os.path.exists(cache_dir), "{}的api cache dir文件夹不存在：{}".format(apiname, cache_dir)
+            assert os.path.exists(cache_dir), "{}的api_cache_dir文件夹不存在：{}".format(apiname, cache_dir)
         else:
             self.logger.warning("{}未配置api cache dir".format(apiname))
+        js = self._query(params={"action":"index"}, use_cache=False)
+        if js["status"] == "failure":
+            if "error" in js.keys() and js["error"] == "bad credentials":
+                self.logger.info("{}的鉴权凭证(cookie/apikey)填写不正确: {}".format(
+                    self.apiname, json.dumps(js)))
+                assert js["error"] != "bad credential"
+        assert js["status"] == "success", "鉴权错误：{}".format(json.dumps(js))
+        uinfo = js["response"]
+        self.username = uinfo["username"]
+        self.uid = uinfo["id"]
+        self.authkey = uinfo["authkey"]
+        self.torrent_pass = uinfo["passkey"]
+        self.logger.info("{} logged in successfully，username：{} uid: {}".format(self.apiname, self.username, self.uid))        
 
     """
     此函数仅保证返回是一个dict，且至少含有"status"一个key
     """
-    def _query(self, url: str, params: dict, use_cache=True) -> dict:
+    def _query(self, params: dict, use_cache=True) -> dict:
         if self.cache_dir != None and use_cache:
             fname = "{}.json".format(urllib.parse.urlencode(params).replace("&", "_"))
             cache_file = os.path.join(self.cache_dir, fname)
@@ -63,7 +78,7 @@ class GazelleApi(object):
         self.logger.info("{} querying {}".format(self.apiname, urllib.parse.urlencode(params)))
         self.timer.wait()
         r = requests.get(
-            url=url, 
+            url=self.api_url, 
             cookies=self.cookies,
             headers=self.headers,
             params=params,
@@ -74,86 +89,75 @@ class GazelleApi(object):
         except json.JSONDecodeError:
             self.logger.info(r.text)
             self.logger.info(traceback.format_exc())
-            return {"status": "json decode failure"}
+            return {"status": "json decode failure"}        
+        if js["status"] == "failure":
+            if "error" in js.keys() and js["error"] == "bad credentials":
+                self.logger.warning("login credentials (cookie/apikey) of {} is wrong: {}".format(
+                    self.apiname, json.dumps(js)))
+                # 鉴权错误时直接返回结果不保存至cache
+                return js
         if self.cache_dir != None and use_cache:
             with open(cache_file, "w") as f:
                 json.dump(js, f)
         return js
 
-
-class REDApi(GazelleApi):
-
-    def __init__(self, *, authkey, torrent_pass, apikey=None, **kwargs):
-        headers = requests.utils.default_headers()
-        if apikey is not None:
-            timer = Timer(10, 10.5)
-            headers["Authorization"] = apikey
-        else:
-            timer = Timer(5, 10.5)
-        self.authkey = authkey
-        self.torrent_pass = torrent_pass
-        super().__init__(apiname="red", headers=headers, timer=timer, **kwargs)
-
-    def query(self, params, **kwargs):
-        return super()._query(url="https://redacted.ch/ajax.php", params=params, **kwargs)
-
     def query_hash(self, h, **kwargs):
-        return self.query(params={
+        return self._query(params={
             "action": "torrent",
             "hash": h.upper(),
         }, **kwargs)
 
     def query_tid(self, tid, **kwargs):
-        return self.query(params={
-            "action": "torrent",
-            "id": tid,
-        }, **kwargs)
-    
-    def query_gid(self, gid, **kwargs):
-        return self.query(params={
-            "action": "torrentgroup", 
-            "id": gid,
-        }, **kwargs)
-
-    def get_dl_url(self, tid):
-        return "https://redacted.ch/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
-            tid, self.authkey, self.torrent_pass)
-    
-    def get_fl_url(self, tid):
-        return self.get_dl_url(tid) + "&usetoken=1"
-
-class DICApi(GazelleApi):
-
-    def __init__(self, *, authkey, torrent_pass, apikey=None, **kwargs):
-        self.authkey = authkey
-        self.torrent_pass = torrent_pass
-        super().__init__(apiname="dic", timer=Timer(5, 10.5), **kwargs)
-
-    def query(self, params, **kwargs):
-        return super()._query(url="https://dicmusic.club/ajax.php", params=params, **kwargs)
-
-    def query_hash(self, h, **kwargs):
-        return self.query(params={
-            "action": "torrent",
-            "hash": h.upper(),
-        }, **kwargs)
-
-    def query_tid(self, tid, **kwargs):
-        return self.query(params={
+        return self._query(params={
             "action": "torrent",
             "id": tid,
         }, **kwargs)
 
     def query_uploaded(self, uid, **kwargs):
-        return self.query(params={
+        return self._query(params={
             "action":"user_torrents",
-            "id":50065,
+            "id":uid,
             "type":"uploaded",
         })
 
     def get_dl_url(self, tid):
-        return "https://dicmusic.club/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
-            tid, self.authkey, self.torrent_pass)
+        raise NotImplementedError
 
     def get_fl_url(self, tid):
         return self.get_dl_url(tid) + "&usetoken=1"
+
+class REDApi(GazelleApi):
+
+    def __init__(self, *, apikey=None, **kwargs):
+        headers = requests.utils.default_headers()
+        self.apikey = apikey
+        if apikey is not None:
+            timer = Timer(10, 10.5)
+            headers["Authorization"] = apikey
+        else:
+            timer = Timer(5, 10.5)        
+        super().__init__(
+            apiname="red",
+            headers=headers,
+            timer=timer, 
+            api_url="https://redacted.ch/ajax.php",
+            **kwargs
+        )        
+
+    def get_dl_url(self, tid):
+        return "https://redacted.ch/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
+            tid, self.authkey, self.torrent_pass)
+    
+class DICApi(GazelleApi):
+
+    def __init__(self, *, apikey=None, **kwargs):
+        super().__init__(
+            apiname="dic",
+            timer=Timer(5, 10.5),
+            api_url="https://dicmusic.club/ajax.php",
+            **kwargs
+        )
+
+    def get_dl_url(self, tid):
+        return "https://dicmusic.club/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
+            tid, self.authkey, self.torrent_pass)

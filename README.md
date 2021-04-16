@@ -48,14 +48,14 @@ cp config.py.example config.py
 
 不同的脚本对于配置中需要的信息不一样，如果你不需要全套的脚本则不需要全部填写，但以下信息是必须的（填为None也视为一种填写）：
 
-* 如果要使用海豚，至少需要填写`CONFIG["dic"]`里的`"api_cache_dir"`, `"authkey"`, `"torrent_pass"`, `"cookies"`
-* 如果要使用red，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`, `"authkey"`, `"torrent_pass"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
+* 如果要使用海豚，至少需要填写`CONFIG["dic"]`里的`"api_cache_dir"`, `"cookies"`
+* 如果要使用red，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
 
 除了种子过滤以外如果要使用其他脚本，强烈建议填写`api_cache_dir`并创建对应文件夹，否则多次运行会反反复复向网站发同样的请求导致运行特别慢。脚本运行后此文件夹下应当生成了若干个json文件，是保存的网站api的缓存。
 
 各个脚本所需要的信息我会在对应项目下说明。
 
-### 如何获取cookie, authkey, torrent_pass
+### 如何获取cookie
 请参考本repo内[README.rss.md](https://github.com/qfishpear/fishrss/blob/main/README.rss.md)内的相关内容
 
 ### 如何获取api_key
@@ -107,6 +107,8 @@ python里，注释的意思是在一行代码前面添加井号#
 python3 filter.py
 ```
 即可，这个脚本会持续监控指定文件夹，然后将满足过滤条件的种子保存到另一个指定文件夹下。监控文件夹下的种子被检查后会被删除。为了缓解黑屏焦虑症，这个脚本每分钟会输出一行"tick"
+
+当你修改`config.py`之后，要重新运行，请按`ctrl-c`掐掉原来运行的`filter.py`，再重新运行。
 
 ### 部分log节选
 隐私已去除
