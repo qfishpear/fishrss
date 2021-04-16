@@ -112,6 +112,12 @@ class GazelleApi(object):
             "action": "torrent",
             "id": tid,
         }, **kwargs)
+    
+    def query_gid(self, gid, **kwargs):
+        return self._query(params={
+            "action": "torrentgroup",
+            "id": gid,
+        }, **kwargs)
 
     def query_uploaded(self, uid, **kwargs):
         return self._query(params={

@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 class TorrentFilter(object):
 
     FILTER_CONFIG_TEMPLATE = {
@@ -21,12 +22,12 @@ class TorrentFilter(object):
         if config["banlist"] is not None:
             assert os.path.exists(config["banlist"]), "filter_config配置错误：被ban用户列表文件{}不存在".format(config["banlist"])
         assert config["media"] is None or type(config["media"]) is set, \
-            "filter_config配置错误：媒体类型(media)应当是集合或者None，而不是{}".format(config["media"])
+            "filter_config配置错误：媒体类型(media)应当是集合或者None，而不是{}".format(json.dumps(config["media"]))
         assert config["format"] is None or type(config["format"]) is set, \
-            "filter_config配置错误：格式类型(format)应当是集合或者None，而不是{}".format(config["media"])
+            "filter_config配置错误：格式类型(format)应当是集合或者None，而不是{}".format(json.dumps(config["media"]))
         if config["sizelim"] is not None:
             assert config["sizelim"] is tuple and len(config["sizelim"]) == 2, \
-                "filter_config配置错误：体积范围(sizelim)应当是一个二元组(x,y)或者None，而不是{}".format(config["sizelim"])
+                "filter_config配置错误：体积范围(sizelim)应当是一个二元组(x,y)或者None，而不是{}".format(json.dumps(config["sizelim"]))
     
     def check_json_response(self, js: dict):
         self.logger.info("{}: checking".format(self.config["name"]))
