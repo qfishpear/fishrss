@@ -1,4 +1,37 @@
-# gazelle r种增强脚本
+- [Gazelle r种增强脚本](#gazelle-r种增强脚本)
+  - [功能](#功能)
+  - [安装依赖](#安装依赖)
+  - [下载本脚本](#下载本脚本)
+  - [填写配置信息](#填写配置信息)
+    - [我应该填写哪些信息](#我应该填写哪些信息)
+    - [如何获取cookie](#如何获取cookie)
+    - [如何获取api_key](#如何获取api_key)
+    - [怎么编辑配置文件](#怎么编辑配置文件)
+    - [怎么对一段代码添加注释/去除注释](#怎么对一段代码添加注释去除注释)
+  - [种子过滤与智能令牌`filter.py`](#种子过滤与智能令牌filterpy)
+    - [警告](#警告)
+    - [填写配置信息](#填写配置信息-1)
+    - [运行](#运行)
+    - [如何持续运行代码](#如何持续运行代码)
+    - [部分log节选](#部分log节选)
+  - [自动拉黑`autoban.py`](#自动拉黑autobanpy)
+    - [拉黑规则](#拉黑规则)
+    - [填写配置信息](#填写配置信息-2)
+    - [运行](#运行-1)
+    - [参数解释](#参数解释)
+    - [部分log节选](#部分log节选-1)
+  - [deluge数据导出`gen_stats.py`](#deluge数据导出gen_statspy)
+  - [deluge删除网站上被删种的种子`remove_unregistered.py`](#deluge删除网站上被删种的种子remove_unregisteredpy)
+    - [警告](#警告-1)
+    - [功能](#功能-1)
+    - [运行](#运行-2)
+  - [低延迟智能令牌`fast_token.py`](#低延迟智能令牌fast_tokenpy)
+    - [填写配置信息](#填写配置信息-3)
+    - [运行](#运行-3)
+    - [配置autodl](#配置autodl)
+    - [部分log节选](#部分log节选-2)
+  - [向我报bug、提需求](#向我报bug提需求)
+# Gazelle r种增强脚本
 本脚本集合主要目的是增强gazelle站里r种刷流的体验
 
 目前只支持海豚和red
@@ -10,6 +43,7 @@
 * 自动拉黑。自动拉黑低分享率种子的发布者，仅针对red，仅支持deluge
 * deluge数据导出，方便分析刷流情况
 * deluge删除网站上被删种的种子（unregistered torrents）
+
 
 ## 安装依赖
 
@@ -214,7 +248,7 @@ watch -n 120 python3 autoban.py
 2021-04-14 11:10:19,877 - INFO - 39 user banned in total
 ```
 
-## deluge数据导出
+## deluge数据导出`gen_stats.py`
 当你配置好自动拉黑里所说的中deluge的信息和网站api后，直接运行
 ```
 python3 gen_stats.py > stats.txt
@@ -225,7 +259,7 @@ python3 gen_stats.py > stats.txt
 
 注意，`gen_stats.py`运行时会去请求已配置信息的网站获取种子信息，受限于api频率限制第一次运行可能会比较慢
 
-## deluge删除网站上被删种的种子
+## deluge删除网站上被删种的种子`remove_unregistered.py`
 
 ### 警告
 此脚本会删除deluge内的种子和**文件**，请确认功能后使用！
