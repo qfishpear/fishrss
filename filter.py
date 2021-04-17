@@ -11,7 +11,7 @@ import argparse
 from IPython import embed
 
 from config import CONFIG
-from common import logger, flush_logger
+from common import logger, flush_logger, get_api, get_filter
 from torrent_filter import TorrentFilter
 from gzapi import GazelleApi
 
@@ -23,14 +23,15 @@ args = parser.parse_args()
 
 configured_trackers = set()
 try:
-    from common import redapi, red_filter
+    redapi = get_api("red")
+    red_filter = get_filter("red")
     configured_trackers.add("red")
     logger.info("api and filter of RED are set")
 except:
     logger.info("api or filter of RED is NOT set")
 try:
-    from common import dicapi, dic_filter
-    configured_trackers.add("dic")
+    dicapi = get_api("dic")
+    dic_filter = get_filter("dic")
     logger.info("api and filter of DIC are set")
 except:
     logger.info("api or filter of DIC is NOT set")

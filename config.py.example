@@ -120,4 +120,6 @@ CONFIG = {
         "username": "xxxxxxxxxxxxxx",
         "password": "xxxxxxxxxxxxxx",
     },
+    # requests发送请求的超时时间，不知道是啥的可以不改，单位：秒
+    "requests_timeout" : 10,
 }

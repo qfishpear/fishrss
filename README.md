@@ -5,8 +5,8 @@
 
 ## 功能
 有以下主要功能
-* 种子过滤。对irssi或者别的方式得到的种子进行个性化过滤，目前支持按体积/发行类别/格式来过滤，并支持根据拉黑列表过滤发布者，对bt客户端没有要求。
-* 智能使用令牌。根据体积限制对符合要求的种子使用令牌
+* 种子过滤。对irssi或者别的方式得到的种子进行个性化过滤，目前支持按体积/发行类别/格式来过滤，并支持根据拉黑列表过滤发布者，对bt客户端没有要求
+* 智能使用令牌。根据体积限制对符合要求的种子使用令牌。<br>如果仅需要此功能不需要种子过滤有一个低延迟版本。对bt客户端没有要求。
 * 自动拉黑。自动拉黑低分享率种子的发布者，仅针对red，仅支持deluge
 * deluge数据导出，方便分析刷流情况
 * deluge删除网站上被删种的种子（unregistered torrents）
@@ -23,6 +23,11 @@ python3 --version
 ```
 sudo pip3 install bencode.py ipython requests datasize deluge-client
 ```
+如果没有root权限，可以使用`--user`：
+```
+pip3 install bencode.py ipython requests datasize deluge-client --user
+```
+或者使用virtualenv等手段（请自行上网查阅）
 
 ## 下载本脚本
 
@@ -50,6 +55,18 @@ cp config.py.example config.py
 
 * 如果要使用海豚，至少需要填写`CONFIG["dic"]`里的`"api_cache_dir"`, `"cookies"`
 * 如果要使用red，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
+
+为了验证`"cookie"`和`"apikey"`的填写是否正确可以运行
+```
+python3 check_config.py
+```
+来检查，正确填写时，应当输出：
+```
+2021-04-17 18:42:20,758 - INFO - red querying action=index
+2021-04-17 18:42:20,925 - INFO - red logged in successfully，username：xxxxxxxxx uid: xxxxx
+2021-04-17 18:42:20,926 - INFO - dic querying action=index
+2021-04-17 18:42:21,670 - INFO - dic logged in successfully，username：xxxxxxxxx uid: xxxxx
+```
 
 除了种子过滤以外如果要使用其他脚本，强烈建议填写`api_cache_dir`并创建对应文件夹，否则多次运行会反反复复向网站发同样的请求导致运行特别慢。脚本运行后此文件夹下应当生成了若干个json文件，是保存的网站api的缓存。
 
@@ -86,8 +103,8 @@ python里，注释的意思是在一行代码前面添加井号#
 
 在sublime里，如果要注释掉一段代码，或者取消一整段代码的注释，请选中这一段代码并按快捷键`ctrl+/`，其中`/`是问号那个键
 
-## 种子过滤`filter.py`
-简单来说本脚本的功能是监控`source_dir`内的种子，将满足设定条件的种子转存到`dest_dir`中，并根据种子体积限制使用令牌。
+## 种子过滤与智能令牌`filter.py`
+简单来说本脚本的功能是监控`source_dir`内的种子，将满足设定条件的种子转存到`dest_dir`中，并根据种子体积限制智能使用令牌。
 
 ### 警告
 * 种子过滤本身有延迟，所以如果发种人irssi发种或发光速种的话可能导致ratio颗粒无收，使用前请考虑清楚。
@@ -232,6 +249,41 @@ python3 remove_unregistered.py
 2021-04-14 11:02:13,582 - INFO - removing torrent "Atomic Kitten - Feels So Good (2002) [7243 5433722 2]" reason: "xxxxxxxx.xxxx: Error: Unregistered torrent"
 2021-04-14 11:02:13,974 - INFO - removing torrent "VA-Clap-(COUD_11)-12INCH_VINYL-FLAC-199X-YARD" reason: "flacsfor.me: Error: Unregistered torrent"
 2021-04-14 11:02:14,533 - INFO - removing torrent "Headnodic - Tuesday (2002) - WEB FLAC" reason: "flacsfor.me: Error: Unregistered torrent"
+```
+
+## 低延迟智能令牌`fast_token.py`
+
+`filter.py`带来的延迟可能不能满足一些人的需求，所以如果只需要根据体积智能使用令牌的功能的话请使用此脚本。
+
+### 填写配置信息
+* `CONFIG["filter"]["dest_dir"]`
+* `CONFIG["dic"或"red"]`的`"token_thresh"`
+
+如果只使用本脚本则无需填写登录信息(cookie和apikey)
+
+### 运行
+```
+python3 fast_token.py https://xxxxxxxxxxx
+```
+其中右侧的参数是种子原本的链接
+
+### 配置autodl
+修改preference->action，像这样，让每次它遇到新种子就调用`fast_token.py`并传入种子链接：
+
+![1.JPG](https://i.loli.net/2021/04/18/7Hf4ksSnAlPYQaF.jpg)
+
+上面填python可执行文件的路径，下面填
+```
+/absolute/path/to/fast_token.py $(TorrentUrl)
+```
+所有都必须是绝对路径
+
+### 部分log节选
+隐私已隐藏
+```
+2021-04-17 19:30:44,079 - INFO - fast token: downloading from url: https://xxxxxxxx.xxxx/torrents.php?action=download&id=49187&authkey=xxxxxxxxxxxxxxxxx&torrent_pass=xxxxxxxxxxxxxxxxx
+2021-04-17 19:30:44,863 - INFO - saving to /home7/fishpear/rss/watch/xxxxxxxxxxxxxxxxx.torrent
+2021-04-17 19:30:44,863 - INFO - getting fl: https://xxxxxxxx.xxxx/torrents.php?action=download&id=49187&authkey=xxxxxxxxxxxxxxxxx&torrent_pass=xxxxxxxxxxxxxxxxx&usetoken=1
 ```
 
 ## 向我报bug、提需求

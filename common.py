@@ -26,31 +26,39 @@ def flush_logger():
     os.fsync(log_stream)
     sys.stdout.flush()
 
+_SUPPORTED_SITES = set(["red", "dic"])
 # api/filter相关
-if "red" in CONFIG.keys():
-    _RED = CONFIG["red"]
-    red_filter = TorrentFilter(
-        config=_RED["filter_config"],
-        logger=logger
-    )
-    redapi = REDApi(
-        apikey=_RED["api_key"],
-        cookies=_RED["cookies"] if "cookies" in _RED.keys() else None,
+def get_api(site, **kwargs):
+    assert site in CONFIG.keys(), "找不到{}的配置信息".format(site)
+    assert site in _SUPPORTED_SITES, "不支持的网站：{}".format(site)
+    if site == "red":
+        RED = CONFIG["red"]
+        api = REDApi(
+            apikey=RED["api_key"],
+            cookies=RED["cookies"] if "cookies" in RED.keys() else None,
+            logger=logger,
+            cache_dir=RED["api_cache_dir"],
+            timeout=CONFIG["requests_timeout"],
+            **kwargs,
+        )
+    elif site == "dic":
+        DIC = CONFIG["dic"]
+        api = DICApi(
+            cookies=DIC["cookies"],
+            logger=logger,
+            cache_dir=DIC["api_cache_dir"],
+            timeout=CONFIG["requests_timeout"],
+            **kwargs,
+        )
+    return api
+def get_filter(site):
+    assert site in CONFIG.keys(), "找不到{}的配置信息".format(site)
+    assert site in _SUPPORTED_SITES, "不支持的网站：{}".format(site)
+    f = TorrentFilter(
+        config=CONFIG[site]["filter_config"],
         logger=logger,
-        cache_dir=_RED["api_cache_dir"]
     )
-
-if "dic" in CONFIG.keys():
-    _DIC = CONFIG["dic"]
-    dic_filter = TorrentFilter(
-        config=_DIC["filter_config"],
-        logger=logger
-    )
-    dicapi = DICApi(
-        cookies=_DIC["cookies"],
-        logger=logger,
-        cache_dir=_DIC["api_cache_dir"]
-    )
+    return f
 
 # 常数
 CONST = {

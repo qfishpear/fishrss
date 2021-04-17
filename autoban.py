@@ -13,7 +13,7 @@ from IPython import embed
 from collections import defaultdict
 
 from config import CONFIG
-from common import logger, redapi, flush_logger, CONST, get_domain_name_from_url
+from common import logger, get_api, flush_logger, CONST, get_domain_name_from_url
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--stats', action='store_true', default=False,
@@ -25,7 +25,7 @@ parser.add_argument('--init', action='store_true', default=False,
 args = parser.parse_args()
 
 banlist = CONFIG["red"]["filter_config"]["banlist"]
-api = redapi
+api = get_api("red")
 SITE_DOMAIN_NAME = CONST["red_url"]
 AUTOBAN = CONFIG["red"]["autoban"]
 
@@ -71,7 +71,7 @@ for uploader, torrents in uploaders:
         ratio = total_ul / total_size
         if args.stats:
             logger.info("uploader: {} #torrents: {} ratio: {:.3f} {:.3f}GB/{:.3f}GB".format(
-                uploader, len(torrents), ratio, total_ul / 1024**3, total_size / 1024**3))        
+                uploader, len(counted_tlist), ratio, total_ul / 1024**3, total_size / 1024**3))        
         if not args.init:
             # 如果不是作为初始化运行，则忽略最近没有新的活动种子的发种人
             # "活动"被定义为还未下载完成，或者添加时间未超过1小时
@@ -83,12 +83,12 @@ for uploader, torrents in uploaders:
                 continue
         # logger.info("{} is checked".format(uploader))
         for cond in AUTOBAN["ratio"]:
-            if len(torrents) >= cond["count"] and ratio < cond["ratiolim"]:
+            if len(counted_tlist) >= cond["count"] and ratio < cond["ratiolim"]:
                 bannedusers.add(uploader)
                 logger.info("new user banned: {} #torrents: {} ratio: {:.3f} {:.3f}GB/{:.3f}GB".format(
-                    uploader, len(torrents), ratio, total_ul / 1024**3, total_size / 1024**3
+                    uploader, len(counted_tlist), ratio, total_ul / 1024**3, total_size / 1024**3
                 ))
-                for t in torrents:
+                for t in counted_tlist:
                     tname = client.core.get_torrent_status(t[b"hash"], ["name"])[b"name"]
                     logger.info("related torrents: {} ratio: {:.3f} {:.1f}MB/{:.1f}MB".format(
                         tname.decode("utf-8"), t[b"ratio"], 
