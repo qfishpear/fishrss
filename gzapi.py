@@ -42,10 +42,18 @@ class GazelleApi(object):
         self.apiname = apiname
         self.cache_dir = cache_dir
         self.cookies = cookies
+        if headers is None:
+            headers = requests.utils.default_headers()
         self.headers = headers
         self.timer = timer
         self.timeout = timeout
         self.api_url = api_url
+
+        # limit the max retry to 1 to prohibit retrying from influencing the frequency control
+        self.sess = requests.Session()
+        self.sess.mount('https://', requests.adapters.HTTPAdapter(max_retries=1))
+        self.sess.mount('http://', requests.adapters.HTTPAdapter(max_retries=1))
+
         # sanity check
         if cache_dir is not None:
             assert os.path.exists(cache_dir), "{}的api_cache_dir文件夹不存在：{}".format(apiname, cache_dir)
@@ -77,7 +85,7 @@ class GazelleApi(object):
                     return json.load(f)
         self.logger.info("{} querying {}".format(self.apiname, urllib.parse.urlencode(params)))
         self.timer.wait()
-        r = requests.get(
+        r = self.sess.get(
             url=self.api_url, 
             cookies=self.cookies,
             headers=self.headers,
