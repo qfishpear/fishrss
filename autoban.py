@@ -68,12 +68,10 @@ for uploader, torrents in uploaders:
             continue
         total_ul = sum([t[b"total_size"] * t[b"ratio"] * t[b"progress"] / 100 for t in counted_tlist])
         total_size = sum([t[b"total_size"] * t[b"progress"] / 100 for t in counted_tlist])
-        avg_ratio_size = total_ul / total_size
-        avg_ratio = sum([t[b"ratio"] for t in counted_tlist]) / len(counted_tlist)
+        ratio = total_ul / total_size
         if args.stats:
-            logger.info("uploader: {} #torrents: {} avg ratio: {:.3f} avg ratio(size-weighted): {:.3f} {:.3f}GB/{:.3f}GB".format(
-                uploader, len(torrents), avg_ratio, avg_ratio_size, total_ul / 1024**3, total_size / 1024**3
-            ))
+            logger.info("uploader: {} #torrents: {} ratio: {:.3f} {:.3f}GB/{:.3f}GB".format(
+                uploader, len(torrents), ratio, total_ul / 1024**3, total_size / 1024**3))        
         if not args.init:
             # 如果不是作为初始化运行，则忽略最近没有新的活动种子的发种人
             # "活动"被定义为还未下载完成，或者添加时间未超过1小时
@@ -85,10 +83,10 @@ for uploader, torrents in uploaders:
                 continue
         # logger.info("{} is checked".format(uploader))
         for cond in AUTOBAN["ratio"]:
-            if len(torrents) >= cond["count"] and avg_ratio_size < cond["ratiolim"]:
+            if len(torrents) >= cond["count"] and ratio < cond["ratiolim"]:
                 bannedusers.add(uploader)
-                logger.info("new user banned: {} #torrents: {} avg ratio: {:.3f} avg ratio(size-weighted): {:.3f} {:.3f}GB/{:.3f}GB".format(
-                    uploader, len(torrents), avg_ratio, avg_ratio_size, total_ul / 1024**3, total_size / 1024**3
+                logger.info("new user banned: {} #torrents: {} ratio: {:.3f} {:.3f}GB/{:.3f}GB".format(
+                    uploader, len(torrents), ratio, total_ul / 1024**3, total_size / 1024**3
                 ))
                 for t in torrents:
                     tname = client.core.get_torrent_status(t[b"hash"], ["name"])[b"name"]
