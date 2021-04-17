@@ -106,9 +106,18 @@ python里，注释的意思是在一行代码前面添加井号#
 ```
 python3 filter.py
 ```
-即可，这个脚本会持续监控指定文件夹，然后将满足过滤条件的种子保存到另一个指定文件夹下。监控文件夹下的种子被检查后会被删除。为了缓解黑屏焦虑症，这个脚本每分钟会输出一行"tick"
+即可，这个脚本会持续监控指定文件夹，然后将满足过滤条件的种子保存到另一个指定文件夹下。监控文件夹下的种子被检查后会被删除。
+
+为了缓解黑屏焦虑症，这个脚本每分钟会输出一行"tick"，如果不喜欢这个feature，请运行时加个`--notick`:
+```
+python3 filter.py --notick
+```
 
 当你修改`config.py`之后，要重新运行，请按`ctrl-c`掐掉原来运行的`filter.py`，再重新运行。
+
+### 如何持续运行代码
+
+本库里所有的脚本都是普通的在前台运行的python脚本，所以如果你希望你关闭本地机器之后盒子上依旧在运行，请使用tmux（推荐）或者screen等工具，使用方法自行上网查阅。
 
 ### 部分log节选
 隐私已去除
@@ -152,6 +161,11 @@ python3 filter.py
 * `config["red"]["autoban"]`下的所有信息
 
 ### 运行
+第一次运行请加个参数`--init`
+```
+python3 autoban.py --init
+```
+之后每次运行只需要运行
 ```
 python3 autoban.py
 ```
@@ -163,6 +177,16 @@ watch -n 120 python3 autoban.py
 ```
 
 注意，`autoban.py`运行时会去请求已配置信息的网站获取种子信息，受限于api频率限制第一次运行可能会比较慢
+
+### 参数解释
+* `--init`：如果**不**添加，那么默认情况下如果一个发种人最近1小时没有发种或者没有未完成种子，则无视他。添加之后则会对有满足`CONFIG["autoban"]["ignore"]`过滤条件种子的发种人进行自动拉黑。这个的目的是为了防止一些发种人因为`max_time_added`带来的滑动窗口而被ban掉。
+* `--stats`：输出统计信息，如果你对ban人的情况有疑问的话可以看一看，部分log节选（隐私已隐藏）：
+```
+2021-04-17 09:56:00,777 - INFO - uploader: xxxxxxxxx #torrents: 3 ratio: 1.030 0.678GB/0.658GB
+2021-04-17 09:56:00,777 - INFO - uploader: xxxxxxxxx #torrents: 1 ratio: 0.506 0.218GB/0.430GB
+2021-04-17 09:56:00,777 - INFO - uploader: xxxxxxxxx #torrents: 13 ratio: 0.842 0.658GB/0.781GB
+2021-04-17 09:56:00,778 - INFO - uploader: xxxxxxxxx #torrents: 67 ratio: 0.924 7.557GB/8.180GB
+```
 
 ### 部分log节选
 隐私已去除
@@ -200,7 +224,7 @@ python3 gen_stats.py > stats.txt
 ```
 python3 remove_unregistered.py
 ```
-这个只会运行一次，要持续拉黑请自己设定定时运行
+这个只会运行一次，要持续删种请自己设定定时运行
 
 部分log节选：
 ```

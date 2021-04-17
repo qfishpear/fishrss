@@ -89,7 +89,7 @@ class GazelleApi(object):
         except json.JSONDecodeError:
             self.logger.info(r.text)
             self.logger.info(traceback.format_exc())
-            return {"status": "json decode failure"}        
+            return {"status": "json decode failure", "raw_response":r.text}        
         if js["status"] == "failure":
             if "error" in js.keys() and js["error"] == "bad credentials":
                 self.logger.warning("login credentials (cookie/apikey) of {} is wrong: {}".format(

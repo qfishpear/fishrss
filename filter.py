@@ -7,12 +7,19 @@ import traceback
 import bencode
 import hashlib
 import urllib
+import argparse
 from IPython import embed
 
 from config import CONFIG
 from common import logger, flush_logger
 from torrent_filter import TorrentFilter
 from gzapi import GazelleApi
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--notick', action='store_true', default=False,
+                    help="if not set, every minute there will be a \"tick\" shown in the log, "
+                         "in order to save people with \"black screen anxiety\"")
+args = parser.parse_args()
 
 configured_trackers = set()
 try:
@@ -127,7 +134,7 @@ while True:
         logger.info(traceback.format_exc())
         pass
     time.sleep(0.2)
-    if cnt % 300 == 0:
+    if cnt % 300 == 0 and not args.notick:
         # 每分钟输出点东西，缓解黑屏焦虑
         logger.info("tick")
         flush_logger()
