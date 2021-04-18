@@ -32,6 +32,7 @@ except:
 try:
     dicapi = get_api("dic")
     dic_filter = get_filter("dic")
+    configured_trackers.add("dic")
     logger.info("api and filter of DIC are set")
 except:
     logger.info("api or filter of DIC is NOT set")
