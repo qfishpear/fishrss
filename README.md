@@ -29,6 +29,7 @@
     - [填写配置信息](#填写配置信息-3)
     - [运行](#运行-3)
     - [配置autodl](#配置autodl)
+    - [参数解释](#参数解释-1)
     - [部分log节选](#部分log节选-2)
   - [向我报bug、提需求](#向我报bug提需求)
 # Gazelle r种增强脚本
@@ -311,6 +312,10 @@ python3 fast_token.py https://xxxxxxxxxxx
 /absolute/path/to/fast_token.py $(TorrentUrl)
 ```
 所有都必须是绝对路径
+
+### 参数解释
+
+* `--chromeheaders`，使用chrome的headers来下载请求，这个是因为不用浏览器重复下载多次同一个种子海豚会不给你下载，因为不是那么合规所以请只在需要的时候加。
 
 ### 部分log节选
 隐私已隐藏
