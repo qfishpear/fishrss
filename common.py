@@ -3,7 +3,9 @@ import sys
 import logging
 import traceback
 import base64
+import hashlib
 import urllib
+import bencode
 
 from torrent_filter import TorrentFilter
 from gzapi import REDApi, DICApi
@@ -26,11 +28,23 @@ def flush_logger():
     os.fsync(log_stream)
     sys.stdout.flush()
 
-_SUPPORTED_SITES = set(["red", "dic"])
+# 常数
+SITE_CONST = {
+    "dic":{
+        "domain": "dicmusic.club",
+        "tracker": "tracker.dicmusic.club",
+        "source": "DICMusic",
+    },
+    "red":{
+        "domain": "redacted.ch",
+        "tracker": "flacsfor.me",
+        "source": "RED",
+    }
+}
 # api/filter相关
 def get_api(site, **kwargs):
     assert site in CONFIG.keys(), "找不到{}的配置信息".format(site)
-    assert site in _SUPPORTED_SITES, "不支持的网站：{}".format(site)
+    assert site in SITE_CONST.keys(), "不支持的网站：{}".format(site)
     if site == "red":
         RED = CONFIG["red"]
         api = REDApi(
@@ -39,6 +53,8 @@ def get_api(site, **kwargs):
             logger=logger,
             cache_dir=RED["api_cache_dir"],
             timeout=CONFIG["requests_timeout"],
+            authkey=RED["authkey"],
+            torrent_pass=RED["torrent_pass"],
             **kwargs,
         )
     elif site == "dic":
@@ -48,26 +64,43 @@ def get_api(site, **kwargs):
             logger=logger,
             cache_dir=DIC["api_cache_dir"],
             timeout=CONFIG["requests_timeout"],
+            authkey=DIC["authkey"],
+            torrent_pass=DIC["torrent_pass"],
             **kwargs,
         )
     return api
 def get_filter(site):
     assert site in CONFIG.keys(), "找不到{}的配置信息".format(site)
-    assert site in _SUPPORTED_SITES, "不支持的网站：{}".format(site)
+    assert site in SITE_CONST.keys(), "不支持的网站：{}".format(site)
     f = TorrentFilter(
         config=CONFIG[site]["filter_config"],
         logger=logger,
     )
     return f
 
-# 常数
-CONST = {
-    "dic_url": "dicmusic.club",
-    "dic_tracker": "tracker.dicmusic.club",
-    "red_url": "redacted.ch",
-    "red_tracker": "flacsfor.me",
-}
-
 # 杂项，通用函数
 def get_domain_name_from_url(url):
     return urllib.parse.urlparse(url).netloc
+def get_params_from_url(url):
+    return dict(urllib.parse.parse_qsl(urllib.parse.urlparse(url).query))
+def get_info_hash(torrent):
+    info = torrent["info"]
+    info_raw = bencode.encode(info)
+    sha = hashlib.sha1(info_raw)
+    info_hash = sha.hexdigest()    
+    return info_hash
+def get_torrent_site(torrent):
+    if "source" not in torrent["info"].keys():
+        source = None
+    else:
+        source = torrent["info"]["source"]
+    for site, sinfo in SITE_CONST.items():
+        if source == sinfo["source"]:
+            return site
+    return "unknown"
+def get_url_site(url):
+    domain_name = get_domain_name_from_url(url)
+    for site, sinfo in SITE_CONST.items():
+        if domain_name == sinfo["domain"]:
+            return site
+    return "unknown"

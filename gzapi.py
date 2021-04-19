@@ -33,10 +33,14 @@ class GazelleApi(object):
         apiname,
         timer,
         api_url,
+        authkey,
+        torrent_pass,
         cache_dir=None,
         cookies=None,
         headers=None,
-        timeout=10
+        timeout=10,
+        skip_login=False,
+        **kwargs
     ):
         self.logger = logger
         self.apiname = apiname
@@ -48,6 +52,8 @@ class GazelleApi(object):
         self.timer = timer
         self.timeout = timeout
         self.api_url = api_url
+        self.authkey = authkey
+        self.torrent_pass = torrent_pass
 
         # limit the max retry to 1 to prohibit retrying from influencing the frequency control
         self.sess = requests.Session()
@@ -59,18 +65,26 @@ class GazelleApi(object):
             assert os.path.exists(cache_dir), "{}的api_cache_dir文件夹不存在：{}".format(apiname, cache_dir)
         else:
             self.logger.warning("{}未配置api cache dir".format(apiname))
+
+        # try login
+        if not skip_login:
+            self.login()
+
+    def login(self):
         js = self._query(params={"action":"index"}, use_cache=False)
         if js["status"] == "failure":
             if "error" in js.keys() and js["error"] == "bad credentials":
                 self.logger.info("{}的鉴权凭证(cookie/apikey)填写不正确: {}".format(
-                    self.apiname, json.dumps(js)))
+                    self.apiname, repr(js)))
                 assert js["error"] != "bad credential"
-        assert js["status"] == "success", "鉴权错误：{}".format(json.dumps(js))
+        assert js["status"] == "success", "{}鉴权错误：{}".format(self.apiname, repr(js))
         uinfo = js["response"]
         self.username = uinfo["username"]
         self.uid = uinfo["id"]
-        self.authkey = uinfo["authkey"]
-        self.torrent_pass = uinfo["passkey"]
+        assert self.authkey == uinfo["authkey"], \
+               "{}的authkey填写错误，应为{}，而不是{}".format(self.apiname, self.authkey, uinfo["authkey"])
+        assert self.torrent_pass == uinfo["passkey"], \
+               "{}的torrent_pass填写错误，应为{}，而不是{}".format(self.apiname, self.torrent_pass, uinfo["passkey"])
         self.logger.info("{} logged in successfully，username：{} uid: {}".format(self.apiname, self.username, self.uid))        
 
     """
@@ -101,7 +115,7 @@ class GazelleApi(object):
         if js["status"] == "failure":
             if "error" in js.keys() and js["error"] == "bad credentials":
                 self.logger.warning("login credentials (cookie/apikey) of {} is wrong: {}".format(
-                    self.apiname, json.dumps(js)))
+                    self.apiname, repr(js)))
                 # 鉴权错误时直接返回结果不保存至cache
                 return js
         if self.cache_dir != None and use_cache:

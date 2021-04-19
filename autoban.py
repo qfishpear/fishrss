@@ -13,7 +13,7 @@ from IPython import embed
 from collections import defaultdict
 
 from config import CONFIG
-from common import logger, get_api, flush_logger, CONST, get_domain_name_from_url
+from common import logger, get_api, flush_logger, SITE_CONST, get_domain_name_from_url
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--stats', action='store_true', default=False,
@@ -26,7 +26,7 @@ args = parser.parse_args()
 
 banlist = CONFIG["red"]["filter_config"]["banlist"]
 api = get_api("red")
-SITE_DOMAIN_NAME = CONST["red_url"]
+SITE_DOMAIN_NAME = SITE_CONST["red"]["domain"]
 AUTOBAN = CONFIG["red"]["autoban"]
 
 DELUGE = CONFIG["deluge"]
@@ -57,21 +57,21 @@ uploaders.sort(key=lambda kv: max([t[b"time_added"] for t in kv[1]]))
 with open(banlist, "r") as f:
     bannedusers = set([line.strip() for line in f])
 for uploader, torrents in uploaders:
+    # 根据规则忽略掉一些种子：
+    counted_tlist = []
+    for t in torrents:
+        if t[b"progress"] / 100 >= AUTOBAN["ignore"]["min_progress"] and \
+            now - t[b"time_added"] < AUTOBAN["ignore"]["max_time_added"]:
+            counted_tlist.append(t)
+    if len(counted_tlist) == 0:
+        continue
+    total_ul = sum([t[b"total_size"] * t[b"ratio"] * t[b"progress"] / 100 for t in counted_tlist])
+    total_size = sum([t[b"total_size"] * t[b"progress"] / 100 for t in counted_tlist])
+    ratio = total_ul / total_size
+    if args.stats:
+        logger.info("uploader: {} #torrents: {} ratio: {:.3f} {:.3f}GB/{:.3f}GB".format(
+            uploader, len(counted_tlist), ratio, total_ul / 1024**3, total_size / 1024**3))        
     if uploader not in bannedusers:
-        # 根据规则忽略掉一些种子：
-        counted_tlist = []
-        for t in torrents:
-            if t[b"progress"] / 100 >= AUTOBAN["ignore"]["min_progress"] and \
-                now - t[b"time_added"] < AUTOBAN["ignore"]["max_time_added"]:
-                counted_tlist.append(t)
-        if len(counted_tlist) == 0:
-            continue
-        total_ul = sum([t[b"total_size"] * t[b"ratio"] * t[b"progress"] / 100 for t in counted_tlist])
-        total_size = sum([t[b"total_size"] * t[b"progress"] / 100 for t in counted_tlist])
-        ratio = total_ul / total_size
-        if args.stats:
-            logger.info("uploader: {} #torrents: {} ratio: {:.3f} {:.3f}GB/{:.3f}GB".format(
-                uploader, len(counted_tlist), ratio, total_ul / 1024**3, total_size / 1024**3))        
         if not args.init:
             # 如果不是作为初始化运行，则忽略最近没有新的活动种子的发种人
             # "活动"被定义为还未下载完成，或者添加时间未超过1小时

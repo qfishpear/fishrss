@@ -57,6 +57,9 @@ CONFIG = {
             "PHPSESSID" : "xxxxxxxxxxxxxxxxxxxxxxxx",
             "session"   : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
         },
+        # authkey和torrent_pass请随便复制一个种子的下载链接，里面有
+        "authkey"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "torrent_pass"  : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         # filter_config的填写请参考上面的模板FILTER_CONFIG_TEMPLATE和给出的样例
         "filter_config" : {
             "name"    : "dicfilter",
@@ -83,6 +86,9 @@ CONFIG = {
     #     # },
     #     # apikey请在red个人设置页面进行设置，记得勾选"Confirm API Key"并保存之后apikey才生效
     #     "api_key"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     # authkey和torrent_pass请随便复制一个种子的下载链接，里面有
+    #     "authkey"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     "torrent_pass"  : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     #     # filter_config的填写请参考上面的模板FILTER_CONFIG_TEMPLATE和给出的样例
     #     "filter_config" : {
     #         "name"    : "redfilter",

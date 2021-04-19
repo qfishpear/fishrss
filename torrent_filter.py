@@ -1,6 +1,5 @@
 import logging
 import os
-import json
 class TorrentFilter(object):
 
     FILTER_CONFIG_TEMPLATE = {
@@ -22,42 +21,54 @@ class TorrentFilter(object):
         if config["banlist"] is not None:
             assert os.path.exists(config["banlist"]), "filter_config配置错误：被ban用户列表文件{}不存在".format(config["banlist"])
         assert config["media"] is None or type(config["media"]) is set, \
-            "filter_config配置错误：媒体类型(media)应当是集合或者None，而不是{}".format(json.dumps(config["media"]))
+            "filter_config配置错误：媒体类型(media)应当是集合或者None，而不是{}".format(repr(config["media"]))
         assert config["format"] is None or type(config["format"]) is set, \
-            "filter_config配置错误：格式类型(format)应当是集合或者None，而不是{}".format(json.dumps(config["media"]))
+            "filter_config配置错误：格式类型(format)应当是集合或者None，而不是{}".format(repr(config["media"]))
         if config["sizelim"] is not None:
             assert type(config["sizelim"]) is tuple and len(config["sizelim"]) == 2, \
-                "filter_config配置错误：体积范围(sizelim)应当是一个二元组(x,y)或者None，而不是{}".format(json.dumps(config["sizelim"]))
+                "filter_config配置错误：体积范围(sizelim)应当是一个二元组(x,y)或者None，而不是{}".format(repr(config["sizelim"]))
     
-    def check_json_response(self, js: dict):
+    def check_tinfo(self, *,
+        uploader=None,
+        media=None,
+        file_format=None,
+        size=None,
+        tid=None,
+        # discarded:
+        **kwargs
+    ):
         self.logger.info("{}: checking".format(self.config["name"]))
-        if js["status"] != "success":
-            return "error status: {}".format(js["status"])
-        response = js["response"]
-        tinfo = response["torrent"]
-        ginfo = response["group"]
-        self.logger.info("uploader: {} media: {} format: {} releasetype: {} size: {:.1f}MB".format(
-            tinfo["username"],
-            tinfo["media"],
-            tinfo["format"],
-            ginfo["releaseType"],
-            tinfo["size"] / 1024**2,
+        self.logger.info("tid: {} uploader: {} media: {} format: {} size: {:.1f}MB".format(
+            tid, uploader, media, file_format, size / 1024**2,
         ))
         if self.config["banlist"] is not None:
             with open(self.config["banlist"], "r") as f:
                 bannedusers = set([line.strip() for line in f])            
-            if tinfo["username"] in bannedusers:
+            if uploader in bannedusers:
                 return "banned user"
         if self.config["media"] is not None:
-            if tinfo["media"] not in self.config["media"]:
+            if media not in self.config["media"]:
                 return "wrong media"
         if self.config["format"] is not None:
-            if tinfo["format"] not in self.config["format"]:
+            if file_format not in self.config["format"]:
                 return "wrong format"
         if self.config["sizelim"] is not None:
-            if tinfo["size"] < self.config["sizelim"][0]:
+            if size < self.config["sizelim"][0]:
                 return "size too small"
-            if tinfo["size"] > self.config["sizelim"][1]:
+            if size > self.config["sizelim"][1]:
                 return "size too big"
         return "accept"
 
+
+    def check_json_response(self, js: dict):
+        self.logger.info("{}: checking".format(self.config["name"]))
+        if js["status"] != "success":
+            return "error status: {}".format(js["status"])
+        tinfo = js["response"]["torrent"]
+        return self.check_tinfo(
+            uploader=tinfo["username"],
+            media=tinfo["media"],
+            file_format=tinfo["format"],
+            size=tinfo["size"],
+            tid=tinfo["id"],
+        )

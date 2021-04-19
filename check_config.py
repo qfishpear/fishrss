@@ -1,8 +1,9 @@
-from common import get_api, get_filter, logger
+from common import get_api, get_filter, logger, SITE_CONST
 from config import CONFIG
 import traceback
 
-for site in ["red", "dic"]:
+configured_sites = {}
+for site in SITE_CONST.keys():
     if site not in CONFIG:
         logger.info("{}未配置".format(site))
     else:
