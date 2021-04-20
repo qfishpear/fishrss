@@ -10,3 +10,4 @@ rss_dic.py
 rss_opencd.py
 config.py
 transcode_scanner.py
+remover.py

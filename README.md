@@ -4,6 +4,7 @@
   - [下载本脚本](#下载本脚本)
   - [填写配置信息](#填写配置信息)
     - [我应该填写哪些信息](#我应该填写哪些信息)
+    - [验证config](#验证config)
     - [如何获取cookie, authkey, torrent_pass](#如何获取cookie-authkey-torrent_pass)
     - [如何获取api_key](#如何获取api_key)
     - [怎么编辑配置文件](#怎么编辑配置文件)
@@ -12,24 +13,26 @@
     - [警告](#警告)
     - [填写配置信息](#填写配置信息-1)
     - [运行](#运行)
-    - [如何持续运行代码](#如何持续运行代码)
+      - [方式1：监控文件夹](#方式1监控文件夹)
+      - [方法2：参数调用](#方法2参数调用)
+    - [参数解释](#参数解释)
     - [部分log节选](#部分log节选)
   - [自动拉黑`autoban.py`](#自动拉黑autobanpy)
     - [拉黑规则](#拉黑规则)
     - [填写配置信息](#填写配置信息-2)
     - [运行](#运行-1)
-    - [参数解释](#参数解释)
+    - [参数解释](#参数解释-1)
     - [部分log节选](#部分log节选-1)
   - [deluge数据导出`gen_stats.py`](#deluge数据导出gen_statspy)
   - [deluge删除网站上被删种的种子`remove_unregistered.py`](#deluge删除网站上被删种的种子remove_unregisteredpy)
     - [警告](#警告-1)
     - [功能](#功能-1)
     - [运行](#运行-2)
-  - [低延迟智能令牌`fast_token.py`](#低延迟智能令牌fast_tokenpy)
+  - [低延迟智能令牌(deprecated)](#低延迟智能令牌deprecated)
     - [填写配置信息](#填写配置信息-3)
     - [运行](#运行-3)
     - [配置autodl](#配置autodl)
-    - [参数解释](#参数解释-1)
+    - [参数解释](#参数解释-2)
     - [部分log节选](#部分log节选-2)
   - [向我报bug、提需求](#向我报bug提需求)
 # Gazelle r种增强脚本
@@ -40,7 +43,7 @@
 ## 功能
 有以下主要功能
 * 种子过滤。对irssi或者别的方式得到的种子进行个性化过滤，目前支持按体积/发行类别/格式来过滤，并支持根据拉黑列表过滤发布者，对bt客户端没有要求
-* 智能使用令牌。根据体积限制对符合要求的种子使用令牌。<br>如果仅需要此功能不需要种子过滤有一个低延迟版本。对bt客户端没有要求。
+* 智能使用令牌。根据体积限制对符合要求的种子使用令牌。对bt客户端没有要求。
 * 自动拉黑。自动拉黑低分享率种子的发布者，仅针对red，仅支持deluge
 * deluge数据导出，方便分析刷流情况
 * deluge删除网站上被删种的种子（unregistered torrents）
@@ -91,21 +94,23 @@ cp config.py.example config.py
 * 如果要使用海豚，至少需要填写`CONFIG["dic"]`里的`"api_cache_dir"`, `"cookies"`，`"authkey"`, `"torrent_pass"`
 * 如果要使用red，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`，`"authkey"`, `"torrent_pass"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
 
-为了验证以上的填写是否正确可以运行
-```
-python3 check_config.py
-```
-来检查，正确填写时，应当输出：
-```
-2021-04-17 18:42:20,758 - INFO - red querying action=index
-2021-04-17 18:42:20,925 - INFO - red logged in successfully，username：xxxxxxxxx uid: xxxxx
-2021-04-17 18:42:20,926 - INFO - dic querying action=index
-2021-04-17 18:42:21,670 - INFO - dic logged in successfully，username：xxxxxxxxx uid: xxxxx
-```
-
 除了种子过滤以外如果要使用其他脚本，强烈建议填写`api_cache_dir`并创建对应文件夹，否则多次运行会反反复复向网站发同样的请求导致运行特别慢。脚本运行后此文件夹下应当生成了若干个json文件，是保存的网站api的缓存。
 
 各个脚本所需要的信息我会在对应项目下说明。
+
+### 验证config
+为了验证config填没填对，可以运行
+```
+python3 check_config.py
+```
+来检查，正确填写时，应当输出类似以下内容。当然，检查通过不代表config填写完全正确。
+```
+2021-04-20 12:08:53,237 - INFO - dic querying action=index
+2021-04-20 12:08:54,035 - INFO - dic logged in successfully，username：fishpear uid: 1132
+2021-04-20 12:08:54,035 - INFO - red querying action=index
+2021-04-20 12:08:54,169 - INFO - red logged in successfully，username：fishpear uid: 50065
+2021-04-20 12:08:54,183 - INFO - deluge is correctly configured
+```
 
 ### 如何获取cookie, authkey, torrent_pass
 请参考本repo内[README.rss.md](https://github.com/qfishpear/fishrss/blob/main/README.rss.md)内的相关内容
@@ -142,7 +147,7 @@ python里，注释的意思是在一行代码前面添加井号#
 简单来说本脚本的功能是监控`source_dir`内的种子，将满足设定条件的种子转存到`dest_dir`中，并根据种子体积限制智能使用令牌。
 
 ### 警告
-* 种子过滤本身有延迟，所以如果发种人irssi发种或发光速种的话可能导致ratio颗粒无收，使用前请考虑清楚。
+* 种子过滤会增加延迟，一些情况下会影响刷流，使用前请考虑清楚。
 * 本脚本自动使用token的逻辑不会检查你是否还有token，当你网站token已用光之后，r种依然会继续，此时你将会进入不用令牌r种的状态，请做好心理准备。
 
 ### 填写配置信息
@@ -154,22 +159,47 @@ python里，注释的意思是在一行代码前面添加井号#
 
 ### 运行
 
-直接运行
+#### 方式1：监控文件夹
 ```
 python3 filter.py
 ```
 即可，这个脚本会持续监控指定文件夹，然后将满足过滤条件的种子保存到另一个指定文件夹下。监控文件夹下的种子被检查后会被删除。
 
-为了缓解黑屏焦虑症，这个脚本每分钟会输出一行"tick"，如果不喜欢这个feature，请运行时加个`--notick`:
-```
-python3 filter.py --notick
-```
+为了缓解黑屏焦虑症，这个脚本每分钟会输出一行"tick"
 
 当你修改`config.py`之后，要重新运行，请按`ctrl-c`掐掉原来运行的`filter.py`，再重新运行。
 
-### 如何持续运行代码
+#### 方法2：参数调用
 
-本库里所有的脚本都是普通的在前台运行的python脚本，所以如果你希望你关闭本地机器之后盒子上依旧在运行，请使用tmux（推荐）或者screen等工具，使用方法自行上网查阅。
+栗子：
+```
+python3 filter.py --file ./1.torrent
+python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxxx\&authkey=xxxx\&torrent_pass=xxx
+```
+其中`--url`是同时下载种子和请求api，延迟比其他方式要显著地小。
+
+如果要使用irssi：
+修改preference->action，像这样：
+
+![1.JPG](https://i.loli.net/2021/04/20/TL5kEym6zY4Z8Rp.jpg)
+
+上面填python可执行文件的路径，下面填
+```
+/absolute/path/to/filter.py --url $(TorrentUrl)
+```
+
+如果要用irssi这样使用本脚本，配置文件内所有路径必须是绝对路径。
+
+
+### 参数解释
+
+* `--url URL` 从URL添加种子，使用此功能则只运行一次，不再监控文件夹
+* `--file FILE` 从文件FILE添加种子，使用此功能则只运行一次，不再监控文件夹
+* `--skip-api` 不请求api，注意，如果使用此功能则filter_config中涉及必须api获取的信息(format, media)必须全部是None，否则任何种子都无法通过过滤
+* `--no-tick` 不再每分钟输出一行tick
+* `--deluge` 直接推送种子到deluge客户端，而不存储到dest_dir
+* `--force-accept` 强制接受，忽略filter_config内填的任何内容
+* `--chromeheaders` 使用chrome的headers来下载请求，这个是因为不用浏览器重复下载多次同一个种子海豚会不给你下载，因为不是那么合规所以请只在需要的时候加。
 
 ### 部分log节选
 隐私已去除
@@ -286,9 +316,12 @@ python3 remove_unregistered.py
 2021-04-14 11:02:14,533 - INFO - removing torrent "Headnodic - Tuesday (2002) - WEB FLAC" reason: "flacsfor.me: Error: Unregistered torrent"
 ```
 
-## 低延迟智能令牌`fast_token.py`
+## 低延迟智能令牌(deprecated)
 
-`filter.py`带来的延迟可能不能满足一些人的需求，所以如果只需要根据体积智能使用令牌的功能的话请使用此脚本。
+deprecated：`filter.py`使用irssi调用并加上参数`--skip-api`和`--force-accept`即可代替此功能：·
+```
+/absolute/path/to/filter.py --url $(TorrentUrl) --skip-api --force-accept
+```
 
 ### 填写配置信息
 * `CONFIG["filter"]["dest_dir"]`

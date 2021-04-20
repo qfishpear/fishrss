@@ -104,3 +104,9 @@ def get_url_site(url):
         if domain_name == sinfo["domain"]:
             return site
     return "unknown"
+def get_tracker_site(url):
+    domain_name = get_domain_name_from_url(url)
+    for site, sinfo in SITE_CONST.items():
+        if domain_name == sinfo["tracker"]:
+            return site
+    return "unknown"
