@@ -169,6 +169,11 @@ python3 filter.py
 
 当你修改`config.py`之后，要重新运行，请按`ctrl-c`掐掉原来运行的`filter.py`，再重新运行。
 
+例子：用监控文件夹时config.py, autodl, deluge分别填写的监控目录：
+![1.JPG](https://i.loli.net/2021/04/20/rzybIaVcXJTw5AR.jpg)
+![2.JPG](https://i.loli.net/2021/04/20/xMldRSFw1A4qs8u.jpg)
+![3.JPG](https://i.loli.net/2021/04/20/x6TZYJGXidgSjOQ.jpg)
+
 #### 方法2：参数调用
 
 栗子：
@@ -189,7 +194,6 @@ python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxx
 ```
 
 如果要用irssi这样使用本脚本，配置文件内所有路径必须是绝对路径。
-
 
 ### 参数解释
 
