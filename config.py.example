@@ -51,7 +51,7 @@ CONFIG = {
     # ========================分割线1=============================
     "dic":{
         # 一个文件夹，保存曾经请求过的api回复，如果不需要可以填None
-        "api_cache_dir" : "./dic",
+        "api_cache_dir" : "~/.cache/fishrss/dic",
         # 关于cookie的填写请参考`README.rss.md`里的描述
         "cookies"       : {
             "PHPSESSID" : "xxxxxxxxxxxxxxxxxxxxxxxx",
@@ -63,7 +63,7 @@ CONFIG = {
         # filter_config的填写请参考上面的模板FILTER_CONFIG_TEMPLATE和给出的样例
         "filter_config" : {
             "name"    : "dicfilter",
-            "banlist" : "./ban_dic.txt",
+            "banlist" : None,
             "media"   : None,
             "format"  : set(["FLAC"]),
             "sizelim" : None,
@@ -77,7 +77,7 @@ CONFIG = {
     # ========================分割线2=============================
     # "red" : {
     #     # 一个文件夹，保存曾经请求过的api回复，如果不需要自动拉黑脚本可以填None
-    #     "api_cache_dir" : "./red",
+    #     "api_cache_dir" : "~/.cache/fishrss/red",
     #     # cookie/apikey二选一用于鉴权，推荐使用api_key，因为可以缩小一半的api请求间隔限制（10秒5次->10秒10次）
     #     # 如果非要使用cookie的话，请将cookie取消注释，并将api_key填为None
     #     # 关于cookie的填写请参考`README.rss.md`里的描述
@@ -92,7 +92,7 @@ CONFIG = {
     #     # filter_config的填写请参考上面的模板FILTER_CONFIG_TEMPLATE和给出的样例
     #     "filter_config" : {
     #         "name"    : "redfilter",
-    #         "banlist" : "./ban_red.txt",
+    #         "banlist" : None,
     #         "media"   : set(["CD"]),
     #         "format"  : None,
     #         "sizelim" : (100 * MB, 1024 * MB)

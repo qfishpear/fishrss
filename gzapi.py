@@ -40,6 +40,7 @@ class GazelleApi(object):
         headers=None,
         timeout=10,
         skip_login=False,
+        # discard
         **kwargs
     ):
         self.logger = logger

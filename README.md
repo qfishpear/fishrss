@@ -4,7 +4,7 @@
   - [下载本脚本](#下载本脚本)
   - [填写配置信息](#填写配置信息)
     - [我应该填写哪些信息](#我应该填写哪些信息)
-    - [如何获取cookie](#如何获取cookie)
+    - [如何获取cookie, authkey, torrent_pass](#如何获取cookie-authkey-torrent_pass)
     - [如何获取api_key](#如何获取api_key)
     - [怎么编辑配置文件](#怎么编辑配置文件)
     - [怎么对一段代码添加注释/去除注释](#怎么对一段代码添加注释去除注释)
@@ -86,12 +86,12 @@ cp config.py.example config.py
 
 ### 我应该填写哪些信息
 
-不同的脚本对于配置中需要的信息不一样，如果你不需要全套的脚本则不需要全部填写，但以下信息是必须的（填为None也视为一种填写）：
+不同的脚本对于配置中需要的信息不一样，如果你不需要全套的脚本则不需要全部填写，以下信息是必须的（填为None也视为一种填写）
 
-* 如果要使用海豚，至少需要填写`CONFIG["dic"]`里的`"api_cache_dir"`, `"cookies"`
-* 如果要使用red，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
+* 如果要使用海豚，至少需要填写`CONFIG["dic"]`里的`"api_cache_dir"`, `"cookies"`，`"authkey"`, `"torrent_pass"`
+* 如果要使用red，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`，`"authkey"`, `"torrent_pass"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
 
-为了验证`"cookie"`和`"apikey"`的填写是否正确可以运行
+为了验证以上的填写是否正确可以运行
 ```
 python3 check_config.py
 ```
@@ -107,7 +107,7 @@ python3 check_config.py
 
 各个脚本所需要的信息我会在对应项目下说明。
 
-### 如何获取cookie
+### 如何获取cookie, authkey, torrent_pass
 请参考本repo内[README.rss.md](https://github.com/qfishpear/fishrss/blob/main/README.rss.md)内的相关内容
 
 ### 如何获取api_key
@@ -294,7 +294,8 @@ python3 remove_unregistered.py
 * `CONFIG["filter"]["dest_dir"]`
 * `CONFIG["dic"或"red"]`的`"token_thresh"`
 
-如果只使用本脚本则无需填写登录信息(cookie和apikey)
+如果要使用本脚本，配置文件内所有路径必须是绝对路径。
+如果只使用本脚本，则无需填写登录信息(cookie和apikey),。
 
 ### 运行
 ```
@@ -311,7 +312,6 @@ python3 fast_token.py https://xxxxxxxxxxx
 ```
 /absolute/path/to/fast_token.py $(TorrentUrl)
 ```
-所有都必须是绝对路径
 
 ### 参数解释
 
