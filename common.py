@@ -8,7 +8,7 @@ import urllib
 import bencode
 
 from torrent_filter import TorrentFilter
-from gzapi import REDApi, DICApi
+from gzapi import REDApi, DICApi, OPSApi
 from config import CONFIG
 
 # logger相关
@@ -39,6 +39,11 @@ SITE_CONST = {
         "domain": "redacted.ch",
         "tracker": "flacsfor.me",
         "source": "RED",
+    },
+    "ops":{
+        "domain": "orpheus.network",
+        "tracker": "home.opsfet.ch",
+        "source": "OPS",
     }
 }
 # api/filter相关
@@ -66,6 +71,18 @@ def get_api(site, **kwargs):
             timeout=CONFIG["requests_timeout"],
             authkey=DIC["authkey"],
             torrent_pass=DIC["torrent_pass"],
+            **kwargs,
+        )
+    elif site == "ops":
+        OPS = CONFIG["ops"]
+        api = OPSApi(
+            apikey=OPS["api_key"],
+            cookies=OPS["cookies"] if "cookies" in OPS.keys() else None,
+            logger=logger,
+            cache_dir=OPS["api_cache_dir"],
+            timeout=CONFIG["requests_timeout"],
+            authkey=OPS["authkey"],
+            torrent_pass=OPS["torrent_pass"],
             **kwargs,
         )
     return api

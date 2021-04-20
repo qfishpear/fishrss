@@ -38,7 +38,7 @@
 # Gazelle r种增强脚本
 本脚本集合主要目的是增强gazelle站里r种刷流的体验
 
-目前只支持海豚和red
+目前支持海豚、red、ops
 
 ## 功能
 有以下主要功能
@@ -93,6 +93,7 @@ cp config.py.example config.py
 
 * 如果要使用海豚，至少需要填写`CONFIG["dic"]`里的`"api_cache_dir"`, `"cookies"`，`"authkey"`, `"torrent_pass"`
 * 如果要使用red，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`，`"authkey"`, `"torrent_pass"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
+* 如果要使用ops，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`，`"authkey"`, `"torrent_pass"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
 
 除了种子过滤以外如果要使用其他脚本，强烈建议填写`api_cache_dir`并创建对应文件夹，否则多次运行会反反复复向网站发同样的请求导致运行特别慢。脚本运行后此文件夹下应当生成了若干个json文件，是保存的网站api的缓存。
 
@@ -105,19 +106,22 @@ python3 check_config.py
 ```
 来检查，正确填写时，应当输出类似以下内容。当然，检查通过不代表config填写完全正确。
 ```
-2021-04-20 12:08:53,237 - INFO - dic querying action=index
-2021-04-20 12:08:54,035 - INFO - dic logged in successfully，username：fishpear uid: 1132
-2021-04-20 12:08:54,035 - INFO - red querying action=index
-2021-04-20 12:08:54,169 - INFO - red logged in successfully，username：fishpear uid: 50065
-2021-04-20 12:08:54,183 - INFO - deluge is correctly configured
+2021-04-20 16:01:43,835 - INFO - dic querying action=index
+2021-04-20 16:01:44,616 - INFO - dic logged in successfully, username：fishpear uid: 1132
+2021-04-20 16:01:44,616 - INFO - red querying action=index
+2021-04-20 16:01:44,781 - INFO - red logged in successfully, username：fishpear uid: 50065
+2021-04-20 16:01:44,783 - INFO - ops querying action=index
+2021-04-20 16:01:45,099 - INFO - ops logged in successfully, username：fishpear uid: 21482
+2021-04-20 16:01:45,116 - INFO - deluge is correctly configured
 ```
 
 ### 如何获取cookie, authkey, torrent_pass
 请参考本repo内[README.rss.md](https://github.com/qfishpear/fishrss/blob/main/README.rss.md)内的相关内容
 
 ### 如何获取api_key
-这个是只有red才有的，打开你的个人设置，然后看下图：
+red：打开你的个人设置，然后看下图：
 ![4.png](https://i.loli.net/2021/04/16/1Hzdi3YZpVXBtc9.png)
+ops：同样打开个人设置，然后照葫芦画瓢
 
 ### 怎么编辑配置文件
 
@@ -153,7 +157,7 @@ python里，注释的意思是在一行代码前面添加井号#
 ### 填写配置信息
 
 * `CONFIG["filter"]`下的所有信息：`"source_dir"`, `"dest_dir"`, `"default_behavior"`
-* 对于海豚/red，分别填写对应`CONFIG["dic"或"red"]`的以下内容：
+* 对于海豚/red/ops，分别填写对应`CONFIG["dic"/"red"/"ops"]`的以下内容：
 * `"filter_config"`下的所有信息：`"name"`, `"banlist"`, `"media"`, `"format"`, `"sizelim"`
 * `"token_thresh"`
 
@@ -169,7 +173,7 @@ python3 filter.py
 
 当你修改`config.py`之后，要重新运行，请按`ctrl-c`掐掉原来运行的`filter.py`，再重新运行。
 
-例子：用监控文件夹时config.py, autodl, deluge分别填写的监控目录：
+例子：用监控文件夹时 config.py, autodl, deluge分别填写的监控目录：
 ![1.JPG](https://i.loli.net/2021/04/20/rzybIaVcXJTw5AR.jpg)
 ![2.JPG](https://i.loli.net/2021/04/20/xMldRSFw1A4qs8u.jpg)
 ![3.JPG](https://i.loli.net/2021/04/20/x6TZYJGXidgSjOQ.jpg)
@@ -302,7 +306,7 @@ python3 gen_stats.py > stats.txt
 ### 功能
 删除所有deluge里还未下完的、且"Tracker Status"中含有"Unregistered torrent"字样的种子，**以及文件**。
 
-注意，如果red/dic之外的种子里的tracker回复了这条信息一样会被删除。
+注意，如果red/dic/ops之外的种子里的tracker回复了这条信息一样会被删除。
 
 ### 运行
 
@@ -322,14 +326,14 @@ python3 remove_unregistered.py
 
 ## 低延迟智能令牌(deprecated)
 
-deprecated：`filter.py`使用irssi调用并加上参数`--skip-api`和`--force-accept`即可代替此功能：·
+deprecated：`filter.py`使用irssi调用并加上参数`--skip-api`和`--force-accept`即可代替此功能：
 ```
 /absolute/path/to/filter.py --url $(TorrentUrl) --skip-api --force-accept
 ```
 
 ### 填写配置信息
 * `CONFIG["filter"]["dest_dir"]`
-* `CONFIG["dic"或"red"]`的`"token_thresh"`
+* `CONFIG["dic"/"red"/"ops"]`的`"token_thresh"`
 
 如果要使用本脚本，配置文件内所有路径必须是绝对路径。
 如果只使用本脚本，则无需填写登录信息(cookie和apikey),。

@@ -86,7 +86,7 @@ class GazelleApi(object):
                "{}的authkey填写错误，应为{}，而不是{}".format(self.apiname, self.authkey, uinfo["authkey"])
         assert self.torrent_pass == uinfo["passkey"], \
                "{}的torrent_pass填写错误，应为{}，而不是{}".format(self.apiname, self.torrent_pass, uinfo["passkey"])
-        self.logger.info("{} logged in successfully，username：{} uid: {}".format(self.apiname, self.username, self.uid))        
+        self.logger.info("{} logged in successfully, username：{} uid: {}".format(self.apiname, self.username, self.uid))        
 
     """
     此函数仅保证返回是一个dict，且至少含有"status"一个key
@@ -164,7 +164,7 @@ class REDApi(GazelleApi):
             timer = Timer(10, 10.5)
             headers["Authorization"] = apikey
         else:
-            timer = Timer(5, 10.5)        
+            timer = Timer(5, 10.5)
         super().__init__(
             apiname="red",
             headers=headers,
@@ -179,7 +179,7 @@ class REDApi(GazelleApi):
     
 class DICApi(GazelleApi):
 
-    def __init__(self, *, apikey=None, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(
             apiname="dic",
             timer=Timer(5, 10.5),
@@ -189,4 +189,23 @@ class DICApi(GazelleApi):
 
     def get_dl_url(self, tid):
         return "https://dicmusic.club/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
+            tid, self.authkey, self.torrent_pass)
+
+class OPSApi(GazelleApi):
+
+    def __init__(self, *, apikey=None, **kwargs):
+        headers = requests.utils.default_headers()
+        self.apikey = apikey
+        if apikey is not None:
+            headers["Authorization"] = apikey
+        super().__init__(
+            apiname="ops",
+            headers=headers,
+            timer=Timer(5, 10.5),
+            api_url="https://orpheus.network/ajax.php",
+            **kwargs
+        )
+
+    def get_dl_url(self, tid):
+        return "https://orpheus.network/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
             tid, self.authkey, self.torrent_pass)

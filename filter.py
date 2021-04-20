@@ -43,7 +43,11 @@ parser.add_argument("--deluge", action="store_true", default=False,
                     help="push to deluge by its api directly")
 # parser.add_argument("--qbittorrent", action="store_true", default=False,
 #                     help="push to qbittorrent by its api directly")
-args = parser.parse_args()
+try:
+    args = parser.parse_args()
+except:
+    logger.info(traceback.format_exc())
+    exit(0)
 
 run_once = args.url is not None or args.file is not None
 if args.chromeheaders:
