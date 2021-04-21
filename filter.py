@@ -45,7 +45,7 @@ parser.add_argument("--deluge", action="store_true", default=False,
 #                     help="push to qbittorrent by its api directly")
 try:
     args = parser.parse_args()
-except:
+except Exception as e:
     logger.info(traceback.format_exc())
     exit(0)
 

@@ -251,7 +251,7 @@ python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxx
 ### 填写配置信息
 
 * 要对red/ops/dic进行自动拉黑，则`CONFIG["red"/"ops"/"dic"]["filter_config"]["banlist"]`必须已经填写
-* `CONFIG["deluge"]`下的所有信息：`"ip"`, `"port"`, `"username"`, `"password"`。其中ip和port应当和connection manager下的信息一致。username和password是deluge登陆webui所输的账号和密码，如果你登录的时候不需要输，可能可以随便填（关于这一点我也不是很确定）。
+* `CONFIG["deluge"]`下的所有信息：`"ip"`, `"port"`, `"username"`, `"password"`。其中ip和port应当和connection manager下的信息一致。username和password是deluge登陆webui所输的账号和密码，如果你登录的时候不需要输，可能可以随便填（关于这一点我也不是很确定）。<br>
 ![5.JPG](https://i.loli.net/2021/04/16/ZBVay3rjhCPK6Ui.jpg)
 * `config["red"/"ops"/"dic"]["autoban"]`下的所有信息
 

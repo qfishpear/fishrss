@@ -133,6 +133,6 @@ def error_catcher(func, *args, **kwargs):
     except KeyboardInterrupt:
         logger.info(traceback.format_exc())
         exit(0)
-    except:
+    except Exception as e:
         logger.info(traceback.format_exc())
         pass
