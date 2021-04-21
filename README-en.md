@@ -4,7 +4,8 @@
   - [Configuration](#configuration)
     - [Which entries should I edit?](#which-entries-should-i-edit)
     - [Verify the config](#verify-the-config)
-    - [Where to find cookie, authkey, torrent_pass](#where-to-find-cookie-authkey-torrent_pass)
+    - [Where to find cookies](#where-to-find-cookies)
+    - [Where to find authkey, torrent_pass](#where-to-find-authkey-torrent_pass)
     - [Where to find api_key](#where-to-find-api_key)
     - [How to comment / uncomment a piece of code](#how-to-comment--uncomment-a-piece-of-code)
   - [Filter by uploader and use tokens by torrent size `filter.py`](#filter-by-uploader-and-use-tokens-by-torrent-size-filterpy)
@@ -42,7 +43,7 @@ Redacted, Orpheus and Dicmusic are now supported.
 
 ## Installation Instructions
 
-Only python3 is supported. To see if your python3 installation, type in
+Only python3 is supported. To see if your python3 is correctly installed, type in
 ```
 python3 --version
 ```
@@ -80,8 +81,8 @@ If you're using Windows, use `/` instead of `\` as the separator of path.
 
 Different entries in config are required in different scripts. Not all of them are required if you're not going to use every scripts in this repo. However, the following ones are required to be edited in all scripts. (`None` is also regarded as edited)
 
-* For Redacted, in `CONFIG["red"]`, `"api_cache_dir"`，`"authkey"`, `"torrent_pass"` are required, and one of `"cookies"`和`"api_key"`are required. If you don't edit `"cookies"`, leave it commented.
-* For Orpheus, in `CONFIG["ops"]`, `"api_cache_dir"`，`"authkey"`, `"torrent_pass"` are required, and one of `"cookies"`和`"api_key"`are required. If you don't edit `"cookies"`, leave it commented.
+* For Redacted, in `CONFIG["red"]`, `"api_cache_dir"`，`"authkey"`, `"torrent_pass"` are required, and one of `"cookies"` and `"api_key"` are required. If you don't edit `"cookies"`, leave it commented.
+* For Orpheus, in `CONFIG["ops"]`, `"api_cache_dir"`，`"authkey"`, `"torrent_pass"` are required, and one of `"cookies"` and `"api_key"` are required. If you don't edit `"cookies"`, leave it commented.
 * For Dicmusic, in `CONFIG["dic"]`, `"api_cache_dir"`，`"cookies"`, `"authkey"`, `"torrent_pass"` are required.
 
 If you're going to use scripts besides `filter.py`, it's highly recommended to fill `api_cache_dir` and create the corresponding directory. Otherwise, same api requests will be sent to server repeatedly if you run the scripts multiple times. Some JSON files should be created as API cache during running.
@@ -89,7 +90,7 @@ If you're going to use scripts besides `filter.py`, it's highly recommended to f
 The entries required in each script will be explained correspondingly.
 
 ### Verify the config
-To see if you edit it correctly, run
+To see if you've edited it correctly, run
 ```
 python3 check_config.py
 ```
@@ -104,8 +105,16 @@ If everything is fine, it should print as below. However, it's not guaranteed to
 2021-04-20 16:01:45,116 - INFO - deluge is correctly configured
 ```
 
-### Where to find cookie, authkey, torrent_pass
-You can refer to [README.rss.md](https://github.com/qfishpear/fishrss/blob/main/README.rss.md) in the repo.
+### Where to find cookies
+There are multiple ways. I personally recommend using the "editthiscookie" plugin of chrome
+```
+https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=zh-CN
+```
+Open an arbitrary page of red, and copy like this:
+![1.png](https://i.loli.net/2021/04/22/1yoz6rNGcBHU4TF.png)
+
+### Where to find authkey, torrent_pass
+Copy the downloading link "DL" of an arbitrary torrent, and you can find them in the link.
 
 ### Where to find api_key
 red：open your profile and follow:
@@ -122,8 +131,8 @@ In sublime and other mainstream text editors, select the piece of code that you 
 In a word, this script monitors new torrent files in `source_dir`, save the ones that fullfills given conditions to `dest_dir`, and spend the tokens according to the torrent size limit.
 
 ### Warning
-* Filtering will slightly increase latency comparing to the raw irssi-autodl and might have influence on the behavior.
-* It won't check if your tokens are used up. If tokens are used up, it will still let the torrent downloaded. So keep an eye on how many tokens are left.
+* Filtering will slightly increase latency comparing to the raw irssi-autodl and might have influence on the racing performance.
+* It won't check if your tokens are used up. If tokens are used up, it will still let the torrent downloaded. So keep an eye on how many tokens are left if you're short in buffer.
 
 ### Configuration
 
@@ -232,7 +241,7 @@ This script read the statistics from deluge, add the uploaders who fullfill give
 
 Here is the entries in `config["red"/"ops"/"dic"]["autoban"]`
 
-* Only consider torrents with progress more than `autoban["ignore"]["min_progress"]` and added no more than `autoban["ignore"]["max_time_added"]` seconds
+* Only consider torrents with progress more than `autoban["ignore"]["min_progress"]` and added no more than `autoban["ignore"]["max_time_added"]` seconds ago.
 * For each entry in `autoban["ratio"]`: if an uploader has uploaded no less than `"count"` torrents and your ratio is under "ratiolim"`, it will be added to banlist.
 
 ### Configuration
@@ -297,7 +306,7 @@ python3 gen_stats.py > stats.txt
 ```
 will get a table in text file `stats.txt`. It not only contains information in deluge, but also information from API.
 
-It uses `tab` as separator, so you can copy-paste the content in to excel and do data analysis
+It uses `tab` as separator, so you can copy-paste the content into excel and analysis the data afterwards
 
 Notice: `gen_stats.py` will send API request and might be slow at the first run because of the limitation of API frequency.
 
