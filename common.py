@@ -127,3 +127,12 @@ def get_tracker_site(url):
         if domain_name == sinfo["tracker"]:
             return site
     return "unknown"
+def error_catcher(func, *args, **kwargs):
+    try:
+        func(*args, **kwargs)
+    except KeyboardInterrupt:
+        logger.info(traceback.format_exc())
+        exit(0)
+    except:
+        logger.info(traceback.format_exc())
+        pass

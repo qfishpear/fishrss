@@ -223,22 +223,15 @@ def check_dir():
     common.flush_logger()
 
 if args.url is not None:
-    handle_url(args.url)
+    common.error_catcher(func=handle_url, dl_url=args.url)
 elif args.file is not None:
-    handle_file(args.file)
+    common.error_catcher(func=handle_file, filepath=args.file)
 else:
     # 持续监控文件夹
     logger.info("monitoring torrent files in {}".format(CONFIG["filter"]["source_dir"]))
     cnt = 0
     while True:
-        try:
-            check_dir()
-        except KeyboardInterrupt:
-            logger.info(traceback.format_exc())
-            exit(0)
-        except:
-            logger.info(traceback.format_exc())
-            pass
+        common.error_catcher(check_dir)
         time.sleep(0.2)
         if cnt % 300 == 0 and not args.no_tick:
             # 每分钟输出点东西，缓解黑屏焦虑
