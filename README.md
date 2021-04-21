@@ -1,3 +1,5 @@
+English Version of README: [README-en.md](https://github.com/qfishpear/fishrss/blob/main/README-en.md)
+
 - [Gazelle r种增强脚本](#gazelle-r种增强脚本)
   - [功能](#功能)
   - [安装依赖](#安装依赖)
