@@ -24,14 +24,34 @@ FILTER_CONFIG_TEMPLATE = {
 """
 
 """
+autoban模板：
+AUTOBAN_TEMPLATE = {
+    # 按ratio ban人的条件
+    "ratio" : [
+        # 以下3个条件表示当某个人发种个数超过count的时候，你的总ratio低于ratiolim则ban掉他
+        # 样例：ratio低于0.2，或发了至少2个种且ratio低于0.4，或发了4至少4个种且ratio低于0.55，则ban掉他
+        {"count":1, "ratiolim":0.2},
+        {"count":2, "ratiolim":0.4},
+        {"count":4, "ratiolim":0.55},
+    ],
+    # 统计ratio时忽略满足以下条件的种子：完成度低于min_progress，或已经发布时间超过max_time_added
+    "ignore": {
+        # 样例：只统计至少完成了30%，且时间不超过36小时的种子。
+        "min_progress" : 0.3,
+        "max_time_added" : 36 * HOUR,
+    },
+}
+"""
+
+"""
 种子过滤功能`filter.py`与配置填写相关的逻辑简述：
 太长不看：从source_dir读取种子，满足要求的转存到dest_dir里
 1. 从文件夹CONFIG["filter"]["source_dir"]里读取种子文件，读取完成后删除原种子
 2. 判断种子属于哪个tracker，目前支持red和dic
-3. 根据对应tracker设定的过滤条件CONFIG["red"或"dic"]["filter_config"]把满足条件的种子保存到CONFIG["filter"]["dest_dir"]里，不满足条件的会被忽略。
+3. 根据对应tracker设定的过滤条件CONFIG["red"/"dic"/"ops"]["filter_config"]把满足条件的种子保存到CONFIG["filter"]["dest_dir"]里，不满足条件的会被忽略。
    对于不支持的tracker根据CONFIG["filter"]["default_behavior"]的设定进行保存或忽略。
-   文件CONFIG["red"或"dic"]["filter_config"]["banlist"]在过滤时实时读取，因此修改此文件之后不需要重新运行`filter.py`
-4. 如果种子符合CONFIG["red"或"dic"]["token_thresh"]的体积条件的话，则会使用token
+   文件CONFIG["red"/"dic"/"ops"]["filter_config"]["banlist"]在过滤时实时读取，因此修改此文件之后不需要重新运行`filter.py`
+4. 如果种子符合CONFIG["red"/"dic"/"ops"]["token_thresh"]的体积条件的话，则会使用token
 """
 
 # 所有填写的文件夹和文件请预先创建好，本程序不会自动创建它们，所有信息没有另外说的都是必填
@@ -71,6 +91,17 @@ CONFIG = {
         # 体积在这个区间内时自动使用令牌，样例：100MB-2GB，如果不想使用令牌请填一个非法的区间，比如(0,-1)
         # 注意，即使令牌用完，本脚本依然会继续下载种子，此时等于下黑种，请关注令牌余量
         "token_thresh": (100 * MB, 2 * GB),
+        # 自动ban人脚本条件，如果需要使用该脚本，请取消以下的注释：
+        # 填写时，请参考上面的模板AUTOBAN_TEMPLATE和给出的样例
+        # "autoban" : {
+        #     "ratio" : [
+        #         {"count":1, "ratiolim":0.2},
+        #     ],        
+        #     "ignore": {
+        #         "min_progress" : 0.3,
+        #         "max_time_added" : 36 * HOUR,
+        #     },
+        # },
     },
     # ========================分割线1=============================
     # red 配置信息，如果不需要刷red请将分割线2内整段注释掉（默认是注释掉的）
@@ -101,21 +132,17 @@ CONFIG = {
     #     # 注意1：red的token使用规则不支持大于2GB的种子，体积上限不要设超过2GB
     #     # 注意2：即使token用完，本脚本依然会继续下载种子，此时等于下黑种，请关注token余量
     #     "token_thresh": (800 * MB, 2 * GB),
-    #     # 自动ban人脚本条件，不需要的可以不填
-    #     "autoban" : {
-    #         # 按ratio ban人的条件
-    #         "ratio" : [
-    #             # 以下3个条件表示当某个人发种个数超过count的时候，你的总ratio低于ratiolim则ban掉他
-    #             {"count":1, "ratiolim":0.2},
-    #             {"count":2, "ratiolim":0.4},
-    #             {"count":4, "ratiolim":0.55},
-    #         ],        
-    #         "ignore": {
-    #             # 统计ratio时忽略满足以下条件的种子：完成度低于min_progress，或已经发布时间超过max_time_added
-    #             "min_progress" : 0.3,
-    #             "max_time_added" : 36 * HOUR,
-    #         },
-    #     },
+    #     # 自动ban人脚本条件，如果需要使用该脚本，请取消以下的注释：
+    #     # 填写时，请参考上面的模板AUTOBAN_TEMPLATE和给出的样例
+    #     # "autoban" : {
+    #     #     "ratio" : [
+    #     #         {"count":1, "ratiolim":0.2},
+    #     #     ],        
+    #     #     "ignore": {
+    #     #         "min_progress" : 0.3,
+    #     #         "max_time_added" : 36 * HOUR,
+    #     #     },
+    #     # },
     # },
     # ========================分割线2=============================
     # ops 配置信息，如果不需要刷ops请将分割线3内整段注释掉（默认是注释掉的）
@@ -144,6 +171,17 @@ CONFIG = {
     #     },
     #     # 体积在这个区间内时自动使用token
     #     "token_thresh": (100 * MB, 2 * GB),
+    #     # 自动ban人脚本条件，如果需要使用该脚本，请取消以下的注释：
+    #     # 填写时，请参考上面的模板AUTOBAN_TEMPLATE和给出的样例
+    #     # "autoban" : {
+    #     #     "ratio" : [
+    #     #         {"count":1, "ratiolim":0.2},
+    #     #     ],        
+    #     #     "ignore": {
+    #     #         "min_progress" : 0.3,
+    #     #         "max_time_added" : 36 * HOUR,
+    #     #     },
+    #     # },
     # },
     # ========================分割线3=============================
     # deluge客户端的登陆信息，如果不需要自动ban人脚本可以不填

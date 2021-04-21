@@ -8,7 +8,7 @@ def check_path(path, name):
         if not os.path.exists(path):
             logger.info("{}不存在，请创建:{}".format(name, path))
 
-# 其他
+# filter
 check_path(CONFIG["filter"]["source_dir"], "source_dir")
 check_path(CONFIG["filter"]["dest_dir"], "dest_dir")
 # 网站
@@ -18,6 +18,9 @@ for site in SITE_CONST.keys():
         logger.info("{}未配置".format(site))
     else:
         check_path(CONFIG[site]["filter_config"]["banlist"], "{}的banlist".format(site))
+        if "autoban" in CONFIG[site].keys():
+            if CONFIG[site]["filter_config"]["banlist"] is None:
+                logger.info("{}配置了autoban，但是banlist未填写")
         try:
             api = get_api(site)
         except:
@@ -38,4 +41,4 @@ try:
     logger.info("deluge is correctly configured")
 except:
     logger.info("deluge配置错误无法连接")
-    logger.info(traceback.format_exc())
+    # logger.info(traceback.format_exc())

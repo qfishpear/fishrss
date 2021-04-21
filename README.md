@@ -44,7 +44,7 @@
 有以下主要功能
 * 种子过滤。对irssi或者别的方式得到的种子进行个性化过滤，目前支持按体积/发行类别/格式来过滤，并支持根据拉黑列表过滤发布者，对bt客户端没有要求
 * 智能使用令牌。根据体积限制对符合要求的种子使用令牌。对bt客户端没有要求。
-* 自动拉黑。自动拉黑低分享率种子的发布者，仅针对red，仅支持deluge
+* 自动拉黑。自动拉黑低分享率种子的发布者，仅支持deluge
 * deluge数据导出，方便分析刷流情况
 * deluge删除网站上被删种的种子（unregistered torrents）
 
@@ -239,21 +239,21 @@ python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxx
 ```
 
 ## 自动拉黑`autoban.py`
-本脚本会读取deluge里种子的信息，将满足设定条件的发种人添加到`CONFIG["red"]["filter_config"]["banlist"]`文件内
+本脚本会读取deluge里种子的信息，将满足设定条件的发种人添加到`CONFIG["red"/"ops"/"dic]["filter_config"]["banlist"]`文件内
 
 ### 拉黑规则
 
-以下为`config["red"]["autoban"]`下的内容：
+以下为`config["red"/"ops"/"dic"]["autoban"]`下的内容：
 
 * 只统计种子完成度大于`autoban["ignore"]["min_progress"]`，且距离发种时间少于`autoban["ignore"]["max_time_added"]`的种子
 * 对于`autoban["ratio"]`下的任意一个条目：如果某发种人发种数量不少于`"count"`且总ratio低于`"ratiolim"`，则ban掉此发种人
 
 ### 填写配置信息
 
-* `CONFIG["red"]["filter_config"]["banlist"]`必须已经填写
+* 要对red/ops/dic进行自动拉黑，则`CONFIG["red"/"ops"/"dic"]["filter_config"]["banlist"]`必须已经填写
 * `CONFIG["deluge"]`下的所有信息：`"ip"`, `"port"`, `"username"`, `"password"`。其中ip和port应当和connection manager下的信息一致。username和password是deluge登陆webui所输的账号和密码，如果你登录的时候不需要输，可能可以随便填（关于这一点我也不是很确定）。
 ![5.JPG](https://i.loli.net/2021/04/16/ZBVay3rjhCPK6Ui.jpg)
-* `config["red"]["autoban"]`下的所有信息
+* `config["red"/"ops"/"dic"]["autoban"]`下的所有信息
 
 ### 运行
 第一次运行请加个参数`--init`
@@ -274,7 +274,8 @@ watch -n 120 python3 autoban.py
 注意，`autoban.py`运行时会去请求已配置信息的网站获取种子信息，受限于api频率限制第一次运行可能会比较慢
 
 ### 参数解释
-* `--init`：如果**不**添加，那么默认情况下如果一个发种人最近1小时没有发种且没有未完成种子，则无视他。添加之后则会对有满足`CONFIG["autoban"]["ignore"]`过滤条件种子的全部发种人进行自动拉黑。默认情况下的目的是为了防止一些发种人因为`max_time_added`带来的滑动窗口而被ban掉。
+* `--init`：如果**不**添加，那么默认情况下如果一个发种人最近1小时没有发种且没有未完成种子，则无视他。添加之后则会对有满足`"ignore"`过滤条件种子的全部发种人进行自动拉黑。默认情况下的目的是为了防止一些发种人因为`max_time_added`带来的滑动窗口而被ban掉。
+* `--site`：可设置为red/ops/dic，只运行指定站点的拉黑逻辑。
 * `--stats`：输出统计信息，如果你对ban人的情况有疑问的话可以看一看，部分log节选（隐私已隐藏）：
 ```
 2021-04-17 09:56:00,777 - INFO - uploader: xxxxxxxxx #torrents: 3 ratio: 1.030 0.678GB/0.658GB
