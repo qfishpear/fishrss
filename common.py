@@ -48,8 +48,8 @@ SITE_CONST = {
 }
 # api/filter相关
 def get_api(site, **kwargs):
-    assert site in CONFIG.keys(), "找不到{}的配置信息".format(site)
-    assert site in SITE_CONST.keys(), "不支持的网站：{}".format(site)
+    assert site in CONFIG.keys(), "no configuration of {} found".format(site)
+    assert site in SITE_CONST.keys(), "unsupported site: {}".format(site)
     if site == "red":
         RED = CONFIG["red"]
         api = REDApi(
@@ -87,8 +87,8 @@ def get_api(site, **kwargs):
         )
     return api
 def get_filter(site):
-    assert site in CONFIG.keys(), "找不到{}的配置信息".format(site)
-    assert site in SITE_CONST.keys(), "不支持的网站：{}".format(site)
+    assert site in CONFIG.keys(), "no configuration of {} found".format(site)
+    assert site in SITE_CONST.keys(), "unsupported site: {}".format(site)
     f = TorrentFilter(
         config=CONFIG[site]["filter_config"],
         logger=logger,

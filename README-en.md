@@ -14,12 +14,12 @@
       - [Mode A：Monitor a directory](#mode-amonitor-a-directory)
       - [Mode B: Call by parameters](#mode-b-call-by-parameters)
     - [Parameters](#parameters)
-    - [some pieces of log (monitor a directory):](#some-pieces-of-log-monitor-a-directory)
+    - [some pieces of log (in monitoring mode):](#some-pieces-of-log-in-monitoring-mode)
   - [Automatically ban uploaders `autoban.py`](#automatically-ban-uploaders-autobanpy)
     - [Rule of banning](#rule-of-banning)
     - [Configuration](#configuration-2)
     - [Run](#run-1)
-    - [参数解释](#参数解释)
+    - [Parameters](#parameters-1)
     - [A piece of log](#a-piece-of-log)
   - [Export deluge statistics `gen_stats.py`](#export-deluge-statistics-gen_statspy)
   - [Delete unregistered torrents in deluge `remove_unregistered.py`](#delete-unregistered-torrents-in-deluge-remove_unregisteredpy)
@@ -34,8 +34,8 @@ This set of scripts aims on bringing better autodl experience in gazelle music t
 Redacted, Orpheus and Dicmusic are now supported.
 
 ## Functionalities
-* Filter by uploader. You can customize some filter condition including a banlist of uploaders. No restriction on BT client.
-* Use token wisely. The tokens are consumed only if torrent size is within a configured range.  No restriction on BT client.
+* Filter by uploader. You can customize some filter conditions including a ban-list of uploaders. No restriction on BT client.
+* Spend tokens wisely. The filter will spend tokens if the torrent size is within a configured range. No restriction on BT client.
 * Autoban. Automatically ban an uploader if your ratio is too low. Only deluge is supported.
 * Export deluge statistics.
 * Delete unregistered torrents in deluge, along with their files.
@@ -66,11 +66,11 @@ cd fishrss/
 
 ## Configuration
 
-make a copy of `config.py.example` into `config.py`
+make a copy of `config.py.en.example` into `config.py`
 ```
-cp config.py.example config.py
+cp config.py.en.example config.py
 ```
-and edit `config.py` according to the instructions in it. Make sure all files and directories in config have been already created.
+and edit `config.py` according to the instructions in it. Make sure all files and directories in config have been already created by yourself.
 
 Relative path is tolerable, but if you're going to run in crontab or something like that, absolute path is highly recommended
 
@@ -105,15 +105,15 @@ If everything is fine, it should print as below. However, it's not guaranteed to
 ```
 
 ### Where to find cookie, authkey, torrent_pass
-You can refer to [README.rss.md](https://github.com/qfishpear/fishrss/blob/main/README.rss.md) in the repo
+You can refer to [README.rss.md](https://github.com/qfishpear/fishrss/blob/main/README.rss.md) in the repo.
 
 ### Where to find api_key
 red：open your profile and follow:
-![4.png](https://i.loli.net/2021/04/16/1Hzdi3YZpVXBtc9.png)
+![1.png](https://i.loli.net/2021/04/22/WNk4ZXz7vi1DneP.png)
 ops：almost the same as red (and even easier)
 
 ### How to comment / uncomment a piece of code
-In python, commenting means adding `#` in front of a line
+In python, commenting means adding `#` in front of a line.
 
 In sublime and other mainstream text editors, select the piece of code that you want to comment / uncomment and press shortcut `ctrl+/`
 
@@ -122,7 +122,7 @@ In sublime and other mainstream text editors, select the piece of code that you 
 In a word, this script monitors new torrent files in `source_dir`, save the ones that fullfills given conditions to `dest_dir`, and spend the tokens according to the torrent size limit.
 
 ### Warning
-* It will increase latency comparing to the raw 
+* Filtering will slightly increase latency comparing to the raw irssi-autodl and might have influence on the behavior.
 * It won't check if your tokens are used up. If tokens are used up, it will still let the torrent downloaded. So keep an eye on how many tokens are left.
 
 ### Configuration
@@ -139,14 +139,14 @@ Just run
 ```
 python3 filter.py
 ```
-It will monitor new torrent files in `source_dir`, save the ones that fullfill given conditions to `dest_dir`, and spend the tokens according to the torrent size limit.
+It will monitor new .torrent files in `source_dir`, save the ones that fullfill given conditions to `dest_dir`, and spend the tokens according to the torrent size limit.
 
 To ease your anxiety a blank screen, it will print a line of "tick" every minute.
 
 If `config.py` is changed, the `filter.py` should be restarted. Press `ctrl-C` to shut it down and run again.
 
 Example: the directories to enter in config.py, autodl and deluge:
-![1.JPG](https://i.loli.net/2021/04/20/rzybIaVcXJTw5AR.jpg)
+![2.JPG](https://i.loli.net/2021/04/22/KZlzXAj8eTEtObu.jpg)
 ![2.JPG](https://i.loli.net/2021/04/20/xMldRSFw1A4qs8u.jpg)
 ![3.JPG](https://i.loli.net/2021/04/20/x6TZYJGXidgSjOQ.jpg)
 
@@ -168,11 +168,11 @@ The above entry should be the absolute path to python3. The under entry should b
 ```
 "/absolute/path/to/filter.py" --file "$(TorrentPathName)"
 ```
-This is also OK but with slightly more latency:
+Below is also fine but with slightly more latency:
 ```
 "/absolute/path/to/filter.py" --url $(TorrentUrl)
 ```
-All paths in config should be absolute if `filter.py` is used in this way.
+All paths in `config.py` should be absolute if `filter.py` is used in this way.
 
 ### Parameters
 ~~~~
@@ -188,9 +188,21 @@ optional arguments:
   --chromeheaders  If set, torrent download requests will be sent with chrome's headers instead ofthe default headers of Requests. It can bypass site's
                    downloading limit of non-browser downloading of torrents. This is slightly against the rule of api usage, so add this only if necessary
   --force-accept   If set, always accept a torrent regardless of filter's setting
-  --deluge         push to deluge by its api directly
+  --deluge         push torrents to deluge by deluge api directly
 ~~~~
-### some pieces of log (monitor a directory):
+Notice: if you just want the "wisely-use-token" functionality and want a lower latency, add `--skip-api` and `--force-accept` like:
+```
+python3 filter.py --skip-api --force-accept
+```
+or
+```
+"/absolute/path/to/filter.py" --file "$(TorrentPathName)" --skip-api --force-accept
+```
+in irssi-autodl.
+
+The latter one should ideally have negligible latency increment comparing to "save to watch folder" directly in irssi-autodl. If you add option `--deluge`, it might be even faster.
+
+### some pieces of log (in monitoring mode):
 ```
 2021-04-12 18:28:37,392 - INFO - api and filter of RED are set
 2021-04-12 18:28:37,392 - INFO - api and filter of DIC are set
@@ -250,7 +262,7 @@ watch -n 120 python3 autoban.py
 
 Notice: `autoban.py` will send API request and might be slow at the first run because of the limitation of API frequency.
 
-### 参数解释
+### Parameters
 ~~~~
 usage: autoban.py [-h] [--stats] [--init] [--site {dic,red,ops}]
 
@@ -316,11 +328,10 @@ The script only runs once, i.e. deletes once. For contineously running, use cron
 2021-04-14 11:02:14,533 - INFO - removing torrent "Headnodic - Tuesday (2002) - WEB FLAC" reason: "flacsfor.me: Error: Unregistered torrent"
 ```
 
-
 ## Bug report and feature request
 
 Bug reports are welcomed:
 * Please send the log file (`filter.log` by default) and screenshots to help analysis.
 
 Feature requests are welcomed:
-* Just don't request more filtering conditions in `filter.py` if it can be done by irssi-autodl itself.
+* Just don't request a filtering condition in `filter.py` if it can be done by irssi-autodl itself.

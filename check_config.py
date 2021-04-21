@@ -6,7 +6,7 @@ import traceback
 def check_path(path, name):
     if path is not None:
         if not os.path.exists(path):
-            logger.info("{}不存在，请创建:{}".format(name, path))
+            logger.info("{} does NOT exist, please create:{}".format(name, path))
 
 # filter
 check_path(CONFIG["filter"]["source_dir"], "source_dir")
@@ -15,16 +15,16 @@ check_path(CONFIG["filter"]["dest_dir"], "dest_dir")
 configured_sites = {}
 for site in SITE_CONST.keys():
     if site not in CONFIG.keys():
-        logger.info("{}未配置".format(site))
+        logger.warning("{} is not configured".format(site))
     else:
-        check_path(CONFIG[site]["filter_config"]["banlist"], "{}的banlist".format(site))
+        check_path(CONFIG[site]["filter_config"]["banlist"], "{}'s banlist".format(site))
         if "autoban" in CONFIG[site].keys():
             if CONFIG[site]["filter_config"]["banlist"] is None:
-                logger.info("{}配置了autoban，但是banlist未填写")
+                logger.warning("{} set \"autoban\" but without banlist")
         try:
             api = get_api(site)
         except:
-            logger.info("{} fail to login".format(site))
+            logger.warning("{} fail to login".format(site))
             logger.info(traceback.format_exc())
         try:        
             f = get_filter(site)
@@ -40,5 +40,5 @@ try:
     assert(de.connected)
     logger.info("deluge is correctly configured")
 except:
-    logger.info("deluge配置错误无法连接")
+    logger.info("can't connect to deluge")
     # logger.info(traceback.format_exc())

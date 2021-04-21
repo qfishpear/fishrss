@@ -1,0 +1,193 @@
+KB = 1024
+MB = 1024**2
+GB = 1024**3
+TB = 1024**4
+SECOND = 1
+MINUTE = 60
+HOUR = 60 * 60
+DAY = 24 * 60 * 60
+"""
+FILTER_CONFIG_TEMPLATE = {
+    # filter name
+    "name": "redfilter",
+    # a text file of banned uploaders. Each line should contain one username.
+    # if you don't want to ban anyone, let it be "None"
+    # it will be re-read each time new torrents are found. 
+    "banlist" : "/home7/fishpear/rss/ban_red.txt",
+    # accepted media types Must be "None" or a set of string
+    "media" : set(["CD", "Vinyl", "WEB"]),
+    # accepted formats. Must be "None" or a set of string
+    "format": set(["FLAC", "WAV"]),
+    # range of size. unit: Byte. if you don't want to limit the size, let it be None. Example: 100MB-1024MB
+    "sizelim": (100 * 1024**2, 1024 * 1024**2),
+}
+"""
+
+"""
+AUTOBAN_TEMPLATE = {
+    # conditions to ban users by ratio:
+    "ratio" : [
+        # the following conditions mean: if an uploader has uploaded no less than "count" torrents
+        # and your ratio is lower than "ratiolim", the uploader will be added to banlist.
+        # Example: if ratio is lower than 0.2 or the uploader has uploaded 2 torrents and ratio is
+        # lower than 0.4 or the uploader has uploaded 4 torrents and ratio is lower than 0.55, it will be banned.        
+        {"count":1, "ratiolim":0.2},
+        {"count":2, "ratiolim":0.4},
+        {"count":4, "ratiolim":0.55},
+    ],
+    # the ratio is only counted for a torrent if it satisfies:
+    # its progress is no less than "min_progress" and has been added no more than "max_time_added" (unit: Second)
+    "ignore": {
+        # Example: only count torrents with at least 30% in progress and uploaded no more than 36 hours:
+        "min_progress" : 0.3,
+        "max_time_added" : 36 * HOUR,
+    },
+}
+"""
+
+# All files and directories should be created by yourself.
+CONFIG = {
+    # the log of all scripts will be here:
+    "log_file": "./filter.log",
+    # general configuration of filter
+    "filter" : {
+        # the directory to monitor .torrent files. Tools like irssi-autodl should save .torrent files here.
+        "source_dir" : "./tocheck",
+        # the filtered torrents will be saved here. This should be the directory monitored by BT clients.
+        "dest_dir"   : "./watch",
+        # default behavior of a torrent from unconfigured trackers. If you don't want to accept, let it be "reject"
+        "default_behavior" : "accept",
+    }, 
+    # Redacted configuration. If you don't want redacted, comment the code between Seperation Line 1
+    # ========================Seperation Line 1=============================
+    "red" : {
+        # a diretory for API request cache. If you don't want it, let it be None
+        "api_cache_dir" : "~/.cache/fishrss/red",
+        # cookie/apikey: choose one of them for logging in. The api_key is recommended because
+        # it halves the API request limitation (5 times per 10 seconds -> 10 times per 10 seconds)
+        # if you still want to use cookies, uncomment it and let "api_key" to be None        
+        # cookies: see `README.rss.md` for more instructions
+        # "cookies"       : {
+        #     "session": "xxxxxxxxxxxx"
+        # },
+        # api_key: set it in your profile. It is only activated after you save your profile.
+        "api_key"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        # authkey & torrent_pass: copy a download link of arbitrary torrent, they will be in it
+        "authkey"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "torrent_pass"  : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        # filter_config: refer to the example and FILTER_CONFIG_TEMPLATE above
+        "filter_config" : {
+            "name"    : "redfilter",
+            "banlist" : None,
+            "media"   : set(["CD"]),
+            "format"  : None,
+            "sizelim" : (100 * MB, 1024 * MB)
+        },
+        # token_thresh: use token when the torrent size is within the range
+        # Example：800MB-2GB. If you don't want to use tokens, let it be an invalid range like (0, -1)
+        # Notice1: if the tokens are used up, filtered torrents will still be saved to "dest_dir".
+        # Notice2: Redacted doesn't allow token to be used for torrents larger than 2GB, 
+        #          so the upper limit should be no more than 2GB
+        "token_thresh": (800 * MB, 2 * GB),
+        # autoban: uncomment below if you need autoban script. Refer to the example and AUTOBAN_TEMPLATE above
+        # "autoban" : {
+        #     "ratio" : [
+        #         {"count":1, "ratiolim":0.2},
+        #     ],        
+        #     "ignore": {
+        #         "min_progress" : 0.3,
+        #         "max_time_added" : 36 * HOUR,
+        #     },
+        # },
+    },
+    # ========================Seperation Line 1=============================
+    # Dicmusic configuration. If you don't want dicmusic, comment the code between Seperation Line 2(commented by default)
+    # ========================Seperation Line 2=============================
+    # "dic":{
+    #     # a diretory for API request cache. If you don't want it, let it be None
+    #     "api_cache_dir" : "~/.cache/fishrss/dic",
+    #     # cookies: see instruction in `README.rss.md`
+    #     "cookies"       : {
+    #         "PHPSESSID" : "xxxxxxxxxxxxxxxxxxxxxxxx",
+    #         "session"   : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    #     },
+    #     # authkey & torrent_pass: copy a download link of arbitrary torrent, they will be in it
+    #     "authkey"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     "torrent_pass"  : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     # filter_config: refer to the example and FILTER_CONFIG_TEMPLATE above
+    #     "filter_config" : {
+    #         "name"    : "dicfilter",
+    #         "banlist" : None,
+    #         "media"   : None,
+    #         "format"  : set(["FLAC"]),
+    #         "sizelim" : None,
+    #     },
+    #     # token_thresh: use token when the torrent size is within the range
+    #     # Example：100MB-2GB. If you don't want to use tokens, let it be an invalid range like (0, -1)
+    #     # Notice: if the tokens are used up, filtered torrents will still be saved to "dest_dir".
+    #     "token_thresh": (100 * MB, 2 * GB),
+    #     # autoban: uncomment below if you need autoban script. Refer to the example and AUTOBAN_TEMPLATE above
+    #     # "autoban" : {
+    #     #     "ratio" : [
+    #     #         {"count":1, "ratiolim":0.2},
+    #     #     ],        
+    #     #     "ignore": {
+    #     #         "min_progress" : 0.3,
+    #     #         "max_time_added" : 36 * HOUR,
+    #     #     },
+    #     # },
+    # },
+    # ========================Seperation Line 2=============================
+    # Orpheus configuration. If you don't want orpheus, comment the code between Seperation Line 3(commented by default)
+    # ========================Seperation Line 3=============================
+    # "ops":{
+    #     # a diretory for API request cache. If you don't want it, let it be None
+    #     "api_cache_dir" : "~/.cache/fishrss/ops",
+    #     # cookie/apikey: choose one of them for logging in. 
+    #     # if you want to use cookies, uncomment it and let "api_key" to be None        
+    #     # cookies: see `README.rss.md` for more instructions
+    #     # "cookies"       : {
+    #     #     "session": "xxxxxxxxxxxx"
+    #     # },
+    #     # api_key: set it in your profile.
+    #     "api_key"        : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     # authkey & torrent_pass: copy a download link of arbitrary torrent, they will be in it
+    #     "authkey"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     "torrent_pass"  : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     # filter_config: refer to the example and FILTER_CONFIG_TEMPLATE above
+    #     "filter_config" : {
+    #         "name"    : "opsfilter",
+    #         "banlist" : None,
+    #         "media"   : None,
+    #         "format"  : set(["FLAC"]),
+    #         "sizelim" : (100 * MB, 1 * GB),
+    #     },
+    #     # token_thresh: use token when the torrent size is within the range
+    #     # Example：100MB-2GB. If you don't want to use tokens, let it be an invalid range like (0, -1)
+    #     # Notice: if the tokens are used up, filtered torrents will still be saved to "dest_dir".
+    #     "token_thresh": (100 * MB, 2 * GB),
+    #     # autoban: uncomment below if you need autoban script. Refer to the example and AUTOBAN_TEMPLATE above
+    #     # "autoban" : {
+    #     #     "ratio" : [
+    #     #         {"count":1, "ratiolim":0.2},
+    #     #     ],        
+    #     #     "ignore": {
+    #     #         "min_progress" : 0.3,
+    #     #         "max_time_added" : 36 * HOUR,
+    #     #     },
+    #     # },
+    # },
+    # ========================Seperation Line 3=============================
+    # deluge api login information
+    "deluge" : {
+        "ip": "127.0.0.1",
+         # this is the port of deluge api but not the port that deluge listens on BT income connections.
+         # clieck "connect manager" on webui and it will show this port on "host"
+        "port": 12345,
+        "username": "xxxxxxxxxxxxxx",
+        "password": "xxxxxxxxxxxxxx",
+    },
+    # timeout of requests library's requests, unit: second 
+    # just leave it there if you don't know what it is
+    "requests_timeout" : 10,
+}
