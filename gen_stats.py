@@ -8,22 +8,18 @@ import functools
 from IPython import embed
 
 from config import CONFIG
-from common import logger, flush_logger, CONST, get_domain_name_from_url, get_api, get_filter
-configured_trackers = set()
-try:
-    redapi = get_api("red")
-    red_filter = get_filter("red")
-    configured_trackers.add("red")
-    logger.info("api and filter of RED are set")
-except:
-    logger.info("api or filter of RED is NOT set")
-try:
-    dicapi = get_api("dic")
-    dic_filter = get_filter("dic")
-    configured_trackers.add("dic")
-    logger.info("api and filter of DIC are set")
-except:
-    logger.info("api or filter of DIC is NOT set")
+import common
+from common import logger, flush_logger
+configured_sites = {}
+for site in common.SITE_CONST.keys():
+    try:
+        # 如果只运行一次，则不验证登陆以减少延迟
+        api = common.get_api(site)
+        tfilter = common.get_filter(site)
+        logger.info("api and filter of {} are set".format(site))
+        configured_sites[site] = {"api":api, "filter":tfilter}
+    except:
+        logger.info("api or filter of {} is NOT set".format(site))
 
 DELUGE = CONFIG["deluge"]
 client = deluge_client.DelugeRPCClient(DELUGE["ip"], DELUGE["port"], DELUGE["username"], DELUGE["password"])
@@ -44,19 +40,17 @@ tlist = list(client.core.get_torrents_status({"state":"Seeding"}, [
 从网站api获取更多信息
 """
 def gen_extra_info(t):
-    tracker_url = urllib.parse.urlparse(t[b"tracker"].decode("utf-8")).netloc
-    if "red" in configured_trackers and tracker_url == CONST["red_tracker"]:
-        api = redapi
-    elif "dic" in configured_trackers and tracker_url == CONST["dic_tracker"]:
-        api = dicapi
-    else:
+    site = common.get_tracker_site(t[b"tracker"].decode("utf-8"))
+    if site not in configured_sites.keys():
         # unsupported tracker
         return {}
+    else:
+        api = configured_sites[site]["api"]
     comment = t[b"comment"].decode("utf-8")
     tid = urllib.parse.parse_qs(urllib.parse.urlparse(comment).query)["torrentid"][0]
     js = api.query_tid(tid)
     if js["status"] != "success":
-        # 
+        # torrentid is the only available info
         return {"torrentid":tid}
     response = js["response"]
     tinfo = response["torrent"]
@@ -81,7 +75,7 @@ for t in tlist:
     info = {
         "name" : t[b"name"].decode("utf-8"),
         "ratio" : t[b"ratio"],
-        "tracker" : get_domain_name_from_url(t[b"tracker"].decode("utf-8")),
+        "tracker" : common.get_domain_name_from_url(t[b"tracker"].decode("utf-8")),
         "size": t[b"total_size"],
         "uploaded": int(t[b"total_size"] * t[b"ratio"]),
         "hash":  t[b"hash"].decode("utf-8"),
