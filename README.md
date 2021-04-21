@@ -93,7 +93,7 @@ cp config.py.example config.py
 
 * 如果要使用海豚，至少需要填写`CONFIG["dic"]`里的`"api_cache_dir"`, `"cookies"`，`"authkey"`, `"torrent_pass"`
 * 如果要使用red，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`，`"authkey"`, `"torrent_pass"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
-* 如果要使用ops，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`，`"authkey"`, `"torrent_pass"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
+* 如果要使用ops，至少需要填写`CONFIG["ops"]`里的`"api_cache_dir"`，`"authkey"`, `"torrent_pass"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
 
 除了种子过滤以外如果要使用其他脚本，强烈建议填写`api_cache_dir`并创建对应文件夹，否则多次运行会反反复复向网站发同样的请求导致运行特别慢。脚本运行后此文件夹下应当生成了若干个json文件，是保存的网站api的缓存。
 
@@ -185,14 +185,17 @@ python3 filter.py
 python3 filter.py --file ./1.torrent
 python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxxx\&authkey=xxxx\&torrent_pass=xxx
 ```
-其中`--url`是同时下载种子和请求api，延迟比其他方式要显著地小。
 
 如果要使用irssi：
 修改preference->action，像这样：
 
-![1.JPG](https://i.loli.net/2021/04/20/TL5kEym6zY4Z8Rp.jpg)
+![1.JPG](https://i.loli.net/2021/04/21/Qvh5G1jmo9qKczS.jpg)
 
 上面填python可执行文件的路径，下面填
+```
+/absolute/path/to/filter.py --file $(TorrentPathName)
+```
+另外，填这样也是可以的，但会略慢于上面的：
 ```
 /absolute/path/to/filter.py --url $(TorrentUrl)
 ```
