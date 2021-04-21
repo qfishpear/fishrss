@@ -191,15 +191,15 @@ python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxx
 如果要使用irssi：
 修改preference->action，像这样：
 
-![1.JPG](https://i.loli.net/2021/04/21/Qvh5G1jmo9qKczS.jpg)
+![1.JPG](https://i.loli.net/2021/04/21/g9dPteW3ciMmKUj.jpg)
 
-上面填python可执行文件的路径，下面填
+上面填python可执行文件的路径，下面填（如果路径有空格或者一些奇怪字符的话必须像这样加上引号，没有的话不加也行）
 ```
-/absolute/path/to/filter.py --file $(TorrentPathName)
+"/absolute/path/to/filter.py" --file "$(TorrentPathName)"
 ```
 另外，填这样也是可以的，但会略慢于上面的：
 ```
-/absolute/path/to/filter.py --url $(TorrentUrl)
+"/absolute/path/to/filter.py" --url $(TorrentUrl)
 ```
 
 如果要用irssi这样使用本脚本，配置文件内所有路径必须是绝对路径。
@@ -333,7 +333,7 @@ python3 remove_unregistered.py
 
 deprecated：`filter.py`使用irssi调用并加上参数`--skip-api`和`--force-accept`即可代替此功能：
 ```
-/absolute/path/to/filter.py --file $(TorrentPathName) --skip-api --force-accept
+"/absolute/path/to/filter.py" --file "$(TorrentPathName)" --skip-api --force-accept
 ```
 
 ### 填写配置信息
