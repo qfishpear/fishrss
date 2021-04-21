@@ -186,6 +186,8 @@ python3 filter.py --file ./1.torrent
 python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxxx\&authkey=xxxx\&torrent_pass=xxx
 ```
 
+注意，这样调用会跳过登陆的检查，所以建议先跑一下`check_config.py`确认配置信息没填错
+
 如果要使用irssi：
 修改preference->action，像这样：
 
@@ -331,7 +333,7 @@ python3 remove_unregistered.py
 
 deprecated：`filter.py`使用irssi调用并加上参数`--skip-api`和`--force-accept`即可代替此功能：
 ```
-/absolute/path/to/filter.py --url $(TorrentUrl) --skip-api --force-accept
+/absolute/path/to/filter.py --file $(TorrentPathName) --skip-api --force-accept
 ```
 
 ### 填写配置信息

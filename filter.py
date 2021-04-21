@@ -159,17 +159,16 @@ def handle_file(filepath):
     if site not in configured_sites.keys():
         handle_default(torrent=torrent)
         return
+    api = configured_sites[site]["api"]
+    tid = common.get_params_from_url(torrent["comment"])["torrentid"]
+    fl_url = api.get_fl_url(tid)
     if args.skip_api:
         api_response = None
-        fl_url = None
     else:        
-        tid = common.get_params_from_url(torrent["comment"])["torrentid"]
-        api = configured_sites[site]["api"]
         api_response = api.query_tid(tid)
         if api_response["status"] != "success":
             logger.info("error in response: {}".format(repr(api_response)))
             api_response = None
-        fl_url = api.get_fl_url(tid)
     handle_gz(
         torrent=torrent,
         api_response=api_response,
