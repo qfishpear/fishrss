@@ -89,7 +89,7 @@ CONFIG = {
         # Notice2: Redacted doesn't allow token to be used for torrents larger than 2GB, 
         #          so the upper limit should be no more than 2GB
         "token_thresh": (800 * MB, 2 * GB),
-        # autoban: uncomment below if you need autoban script. Refer to the example and AUTOBAN_TEMPLATE above
+        # autoban: uncomment below if you need autoban script for red. Refer to the example and AUTOBAN_TEMPLATE above
         # "autoban" : {
         #     "ratio" : [
         #         {"count":1, "ratiolim":0.2},
@@ -126,7 +126,7 @@ CONFIG = {
     #     # Example：100MB-2GB. If you don't want to use tokens, let it be an invalid range like (0, -1)
     #     # Notice: if the tokens are used up, filtered torrents will still be saved to "dest_dir".
     #     "token_thresh": (100 * MB, 2 * GB),
-    #     # autoban: uncomment below if you need autoban script. Refer to the example and AUTOBAN_TEMPLATE above
+    #     # autoban: uncomment below if you need autoban script for dic. Refer to the example and AUTOBAN_TEMPLATE above
     #     # "autoban" : {
     #     #     "ratio" : [
     #     #         {"count":1, "ratiolim":0.2},
@@ -166,7 +166,7 @@ CONFIG = {
     #     # Example：100MB-2GB. If you don't want to use tokens, let it be an invalid range like (0, -1)
     #     # Notice: if the tokens are used up, filtered torrents will still be saved to "dest_dir".
     #     "token_thresh": (100 * MB, 2 * GB),
-    #     # autoban: uncomment below if you need autoban script. Refer to the example and AUTOBAN_TEMPLATE above
+    #     # autoban: uncomment below if you need autoban script for ops. Refer to the example and AUTOBAN_TEMPLATE above
     #     # "autoban" : {
     #     #     "ratio" : [
     #     #         {"count":1, "ratiolim":0.2},
@@ -182,7 +182,7 @@ CONFIG = {
     "deluge" : {
         "ip": "127.0.0.1",
          # this is the port of deluge api but not the port that deluge listens on BT income connections.
-         # clieck "connect manager" on webui and it will show this port on "host"
+         # click "connect manager" on webui and it will show this port on "host"
         "port": 12345,
         "username": "xxxxxxxxxxxxxx",
         "password": "xxxxxxxxxxxxxx",

@@ -10,7 +10,7 @@
     - [How to comment / uncomment a piece of code](#how-to-comment--uncomment-a-piece-of-code)
   - [Filter by uploader and use tokens by torrent size `filter.py`](#filter-by-uploader-and-use-tokens-by-torrent-size-filterpy)
     - [Warning](#warning)
-    - [Configuration](#configuration-1)
+    - [Configuration Required](#configuration-required)
     - [Run](#run)
       - [Mode A: Monitor a directory](#mode-a-monitor-a-directory)
       - [Mode B: Call by parameters](#mode-b-call-by-parameters)
@@ -18,7 +18,7 @@
     - [some pieces of log (in monitoring mode):](#some-pieces-of-log-in-monitoring-mode)
   - [Automatically ban uploaders `autoban.py`](#automatically-ban-uploaders-autobanpy)
     - [Rule of banning](#rule-of-banning)
-    - [Configuration](#configuration-2)
+    - [Configuration Required](#configuration-required-1)
     - [Run](#run-1)
     - [Parameters](#parameters-1)
     - [A piece of log](#a-piece-of-log)
@@ -85,7 +85,7 @@ Different entries in config are required in different scripts. Not all of them a
 * For Orpheus, in `CONFIG["ops"]`, `"api_cache_dir"`，`"authkey"`, `"torrent_pass"` are required, and one of `"cookies"` and `"api_key"` are required. If you don't edit `"cookies"`, leave it commented.
 * For Dicmusic, in `CONFIG["dic"]`, `"api_cache_dir"`，`"cookies"`, `"authkey"`, `"torrent_pass"` are required.
 
-If you're going to use scripts besides `filter.py`, it's highly recommended to fill `api_cache_dir` and create the corresponding directory. Otherwise, same api requests will be sent to server repeatedly if you run the scripts multiple times. Some JSON files should be created as API cache during running.
+If you're going to use other scripts besides `filter.py`, it's highly recommended to fill `api_cache_dir` and create the corresponding directory. Otherwise, same api requests will be sent to server repeatedly if you run the scripts multiple times, which makes it really slow. Some JSON files should be created in that folder as API cache during running.
 
 The entries required in each script will be explained correspondingly.
 
@@ -108,7 +108,7 @@ If everything is fine, it should print as below. However, it's not guaranteed to
 ### Where to find cookies
 There are multiple ways. I personally recommend using the "editthiscookie" plugin of chrome
 ```
-https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=zh-CN
+https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg
 ```
 Open an arbitrary page of red, and copy like this:
 ![1.png](https://i.loli.net/2021/04/22/1yoz6rNGcBHU4TF.png)
@@ -134,7 +134,7 @@ In a word, this script monitors new torrent files in `source_dir`, save the ones
 * Filtering will slightly increase latency comparing to the raw irssi-autodl and might have influence on the racing performance.
 * It won't check if your tokens are used up. If tokens are used up, it will still leave the torrent downloaded. So keep an eye on how many tokens are left if you're short in buffer.
 
-### Configuration
+### Configuration Required
 
 * All entries in `CONFIG["filter"]`：`"source_dir"`, `"dest_dir"`, `"default_behavior"`
 * For dic/red/ops, fill the following entries in `CONFIG["dic"/"red"/"ops"]` correspondingly:
@@ -239,7 +239,7 @@ The latter one should ideally have negligible latency increment comparing to "sa
 ## Automatically ban uploaders `autoban.py`
 This script read the statistics from deluge, add the uploaders who fullfill given conditions to file `CONFIG["red"/"ops"/"dic]["filter_config"]["banlist"]`.
 
-`autoban.py` runs independently with `filter.py` and only interacts with it by the banlist file.
+`autoban.py` runs independently of `filter.py` and only interacts with it by the banlist file.
 
 ### Rule of banning
 
@@ -248,7 +248,7 @@ Here is the entries in `config["red"/"ops"/"dic"]["autoban"]`
 * Only consider torrents with progress more than `autoban["ignore"]["min_progress"]` and added no more than `autoban["ignore"]["max_time_added"]` seconds ago.
 * For each entry in `autoban["ratio"]`: if an uploader has uploaded no less than `"count"` torrents and your ratio is under "ratiolim"`, it will be added to banlist.
 
-### Configuration
+### Configuration Required
 
 * If you want autoban for red/ops/dic, `CONFIG["red"/"ops"/"dic"]["filter_config"]["banlist"]` should be a file.
 * All entries in `CONFIG["deluge"]`: `"ip"`, `"port"`, `"username"`, `"password"`. Here `ip` and `port` should be consistent with connection manager. `username` and `password` are the ones for logging into deluge's webui, if you're not asked to enter username and password, they can be arbitrary (but I'm not confident of this) <br>
