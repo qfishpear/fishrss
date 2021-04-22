@@ -214,7 +214,6 @@ python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxx
 * `--no-tick` 不再每分钟输出一行tick
 * `--deluge` 直接推送种子到deluge客户端，而不存储到dest_dir
 * `--force-accept` 强制接受，忽略filter_config内填的任何内容
-* `--chromeheaders` 使用chrome的headers来下载请求，这个是因为不用浏览器重复下载多次同一个种子海豚会不给你下载，因为不是那么合规所以请只在需要的时候加。
 
 ### 部分log节选
 隐私已去除
@@ -361,10 +360,6 @@ python3 fast_token.py https://xxxxxxxxxxx
 ```
 /absolute/path/to/fast_token.py $(TorrentUrl)
 ```
-
-### 参数解释
-
-* `--chromeheaders`，使用chrome的headers来下载请求，这个是因为不用浏览器重复下载多次同一个种子海豚会不给你下载，因为不是那么合规所以请只在需要的时候加。
 
 ### 部分log节选
 隐私已隐藏

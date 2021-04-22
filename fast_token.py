@@ -17,19 +17,10 @@ if "dic" in CONFIG.keys():
 
 parser = argparse.ArgumentParser()
 parser.add_argument('url', help="url of torrent, required")
-parser.add_argument('--chromeheaders', action='store_true', default=False,
-                    help="If set, requests will be sent with chrome's headers instead of"
-                         "the default headers of Requests. "
-                         "It can bypass site's downloading limit of non-browser downloading of torrents. "
-                         "This is slightly against the rule of api usage, so add this only if necessary")
 args = parser.parse_args()
 
-if args.chromeheaders:
-    HEADERS = {
-        'User-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'
-    }
-else:
-    HEADERS = requests.utils.default_headers()
+HEADERS = requests.utils.default_headers()
+HEADERS['User-Agent'] = "FishRSS"
 
 def get_info_hash(torrent):
     info_raw = bencode.encode(torrent["info"])

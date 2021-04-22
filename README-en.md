@@ -185,19 +185,21 @@ All paths in `config.py` should be absolute if `filter.py` is used in this way.
 
 ### Parameters
 ~~~~
-usage: filter.py [-h] [--url URL] [--file FILE] [--skip-api] [--no-tick] [--chromeheaders] [--force-accept] [--deluge]
+usage: filter.py [-h] [--url URL] [--file FILE] [--skip-api] [--no-tick] [--force-accept] [--deluge]
 
 optional arguments:
-  -h, --help       show this help message and exit
-  --url URL        Download url of a torrent. If an url is provided, the code will only run once for the provided url and exits.
-  --file FILE      path of a torrent file. If a file is provided, the code will only run once for the provided file and exits.
-  --skip-api       If set, the site api call will be skipped. Notice: the api-only information will be unavailable: uploader, media and format. Therefore,
-                   their filter config must be None otherwise there won't be any torrent filtered out.
-  --no-tick        If not set, every minute there will be a "tick" shown in the log, in order to save people with "black screen anxiety"
-  --chromeheaders  If set, torrent download requests will be sent with chrome's headers instead ofthe default headers of Requests. It can bypass site's
-                   downloading limit of non-browser downloading of torrents. This is slightly against the rule of api usage, so add this only if necessary
-  --force-accept   If set, always accept a torrent regardless of filter's setting
-  --deluge         push torrents to deluge by deluge api directly
+  -h, --help      show this help message and exit
+  --url URL       Download url of a torrent. If an url is provided, the code will only run once for the provided url
+                  and exits.
+  --file FILE     path of a torrent file. If a file is provided, the code will only run once for the provided file and
+                  exits.
+  --skip-api      If set, the site api call will be skipped. Notice: the api-only information will be unavailable:
+                  uploader, media and format. Therefore, their filter config must be None otherwise there won't be any
+                  torrent filtered out.
+  --no-tick       If not set, every minute there will be a "tick" shown in the log, in order to save people with
+                  "black screen anxiety"
+  --force-accept  If set, always accept a torrent regardless of filter's setting
+  --deluge        push torrents to deluge by its api directly instead of saving to CONFIG["filter"]["dest_dir"]
 ~~~~
 Notice: if you just want the "wisely-use-token" functionality and want a lower latency, add `--skip-api` and `--force-accept` like:
 ```

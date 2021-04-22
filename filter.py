@@ -16,7 +16,7 @@ from config import CONFIG
 import common
 from common import logger
 from torrent_filter import TorrentFilter
-from gzapi import GazelleApi
+import gzapi
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--url", default=None, 
@@ -32,15 +32,10 @@ parser.add_argument("--skip-api", action="store_true", default=False,
 parser.add_argument("--no-tick", action="store_true", default=False,
                     help="If not set, every minute there will be a \"tick\" shown in the log, "
                          "in order to save people with \"black screen anxiety\"")
-parser.add_argument("--chromeheaders", action="store_true", default=False,
-                    help="If set, torrent download requests will be sent with chrome's headers instead of"
-                         "the default headers of Requests. "
-                         "It can bypass site's downloading limit of non-browser downloading of torrents. "
-                         "This is slightly against the rule of api usage, so add this only if necessary")
 parser.add_argument("--force-accept", action="store_true", default=False,
                     help="If set, always accept a torrent regardless of filter's setting")
 parser.add_argument("--deluge", action="store_true", default=False,
-                    help="push to deluge by its api directly")
+                    help="push torrents to deluge by its api directly instead of saving to CONFIG[\"filter\"][\"dest_dir\"]")
 # parser.add_argument("--qbittorrent", action="store_true", default=False,
 #                     help="push to qbittorrent by its api directly")
 try:
@@ -50,10 +45,7 @@ except Exception as e:
     exit(0)
 
 run_once = args.url is not None or args.file is not None
-if args.chromeheaders:
-    download_headers = {'User-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'}
-else:
-    download_headers = requests.utils.default_headers()
+gzapi.FISH_HEADERS = requests.utils.default_headers()
 
 if args.deluge:
     import deluge_client
@@ -111,7 +103,7 @@ def _handle(*,
             else:
                 logger.info("getting fl:{}".format(fl_url))
                 # 因为种子已转存，FL链接下载下来的种子会被丢弃
-                r = requests.get(fl_url, timeout=CONFIG["requests_timeout"], headers=download_headers)
+                r = requests.get(fl_url, timeout=CONFIG["requests_timeout"], headers=gzapi.FISH_HEADERS)
                 try:
                     # 验证种子合法性
                     fl_torrent = bencode.decode(r.content)
@@ -183,7 +175,7 @@ def handle_url(dl_url):
         return api_response
     def _download_torrent(dl_url):
         logger.info("downloading torrent_file")
-        r = requests.get(dl_url, timeout=CONFIG["requests_timeout"], headers=download_headers)
+        r = requests.get(dl_url, timeout=CONFIG["requests_timeout"], headers=gzapi.FISH_HEADERS)
         torrent = bencode.decode(r.content)
         logger.info("torrent file downloaded")
         return torrent    

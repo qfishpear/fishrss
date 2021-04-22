@@ -26,6 +26,9 @@ class Timer(object):
             t = time.time()
         self.history = self.history[1:] + [t,]
 
+FISH_HEADERS = requests.utils.default_headers()
+FISH_HEADERS['User-Agent'] = "FishRSS"
+
 class GazelleApi(object):
 
     def __init__(self, *, 
@@ -92,7 +95,7 @@ class GazelleApi(object):
     此函数仅保证返回是一个dict，且至少含有"status"一个key
     """
     def _query(self, params: dict, use_cache=True) -> dict:
-        if self.cache_dir != None and use_cache:
+        if self.cache_dir is not None and use_cache:
             fname = "{}.json".format(urllib.parse.urlencode(params).replace("&", "_"))
             cache_file = os.path.join(self.cache_dir, fname)
             if os.path.exists(cache_file):
@@ -119,7 +122,7 @@ class GazelleApi(object):
                     self.apiname, repr(js)))
                 # 鉴权错误时直接返回结果不保存至cache
                 return js
-        if self.cache_dir != None and use_cache:
+        if self.cache_dir is not None and use_cache:
             with open(cache_file, "w") as f:
                 json.dump(js, f)
         return js
@@ -158,7 +161,7 @@ class GazelleApi(object):
 class REDApi(GazelleApi):
 
     def __init__(self, *, apikey=None, **kwargs):
-        headers = requests.utils.default_headers()
+        headers = FISH_HEADERS.copy()
         self.apikey = apikey
         if apikey is not None:
             timer = Timer(10, 10.5)
@@ -182,6 +185,7 @@ class DICApi(GazelleApi):
     def __init__(self, **kwargs):
         super().__init__(
             apiname="dic",
+            headers=FISH_HEADERS,
             timer=Timer(5, 10.5),
             api_url="https://dicmusic.club/ajax.php",
             **kwargs
@@ -194,7 +198,7 @@ class DICApi(GazelleApi):
 class OPSApi(GazelleApi):
 
     def __init__(self, *, apikey=None, **kwargs):
-        headers = requests.utils.default_headers()
+        headers = FISH_HEADERS.copy()
         self.apikey = apikey
         if apikey is not None:
             headers["Authorization"] = apikey
