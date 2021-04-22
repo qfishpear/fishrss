@@ -96,6 +96,10 @@ def _handle(*,
         # 满足条件，转存种子        
         logger.info("accept")
         handle_accept(torrent)
+        # 如果是red，遵守规则不使用令牌
+        site = common.get_torrent_site(torrent)
+        if site == "red":
+            return
         # 根据体积限制使用令牌
         if token_thresh is not None and token_thresh[0] < tinfo["size"] and tinfo["size"] < token_thresh[1]:
             if fl_url is None:
@@ -153,7 +157,10 @@ def handle_file(filepath):
         return
     api = configured_sites[site]["api"]
     tid = common.get_params_from_url(torrent["comment"])["torrentid"]
-    fl_url = api.get_fl_url(tid)
+    if site == "red":
+        fl_url = None
+    else:
+        fl_url = api.get_fl_url(tid)
     if args.skip_api:
         api_response = None
     else:        

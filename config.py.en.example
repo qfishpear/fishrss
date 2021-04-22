@@ -83,12 +83,9 @@ CONFIG = {
             "format"  : None,
             "sizelim" : (100 * MB, 1024 * MB)
         },
-        # token_thresh: use token when the torrent size is within the range
-        # Example：800MB-2GB. If you don't want to use tokens, let it be an invalid range like (0, -1)
-        # Notice1: if the tokens are used up, filtered torrents will still be saved to "dest_dir".
-        # Notice2: Redacted doesn't allow token to be used for torrents larger than 2GB, 
-        #          so the upper limit should be no more than 2GB
-        "token_thresh": (800 * MB, 2 * GB),
+        # Staff of RED explicitly explained that using tokens by scripts is against the rule.
+        # So don't modify "token_thresh". It won't take effect even if you modify it.
+        "token_thresh": (0, -1),
         # autoban: uncomment below if you need autoban script for red. Refer to the example and AUTOBAN_TEMPLATE above
         # "autoban" : {
         #     "ratio" : [

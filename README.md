@@ -30,11 +30,6 @@ English Version of README: [README-en.md](https://github.com/qfishpear/fishrss/b
     - [警告](#警告-1)
     - [功能](#功能-1)
     - [运行](#运行-2)
-  - [低延迟智能令牌(deprecated)](#低延迟智能令牌deprecated)
-    - [填写配置信息](#填写配置信息-3)
-    - [运行](#运行-3)
-    - [配置autodl](#配置autodl)
-    - [部分log节选](#部分log节选-2)
   - [向我报bug、提需求](#向我报bug提需求)
 # Gazelle r种增强脚本
 本脚本集合主要目的是增强gazelle站里r种刷流的体验
@@ -44,7 +39,7 @@ English Version of README: [README-en.md](https://github.com/qfishpear/fishrss/b
 ## 功能
 有以下主要功能
 * 种子过滤。对irssi或者别的方式得到的种子进行个性化过滤，目前支持按体积/发行类别/格式来过滤，并支持根据拉黑列表过滤发布者，对bt客户端没有要求
-* 智能使用令牌。根据体积限制对符合要求的种子使用令牌。对bt客户端没有要求。
+* 智能使用令牌。根据体积限制对符合要求的种子使用令牌。对bt客户端没有要求。由于违反规则RED不支持此功能
 * 自动拉黑。自动拉黑低分享率种子的发布者，仅支持deluge
 * deluge数据导出，方便分析刷流情况
 * deluge删除网站上被删种的种子（unregistered torrents）
@@ -160,7 +155,7 @@ python里，注释的意思是在一行代码前面添加井号#
 * `CONFIG["filter"]`下的所有信息：`"source_dir"`, `"dest_dir"`, `"default_behavior"`
 * 对于海豚/red/ops，分别填写对应`CONFIG["dic"/"red"/"ops"]`的以下内容：
 * `"filter_config"`下的所有信息：`"name"`, `"banlist"`, `"media"`, `"format"`, `"sizelim"`
-* `"token_thresh"`
+* `"token_thresh"`（对RED不需要填写）
 
 ### 运行
 
@@ -330,44 +325,6 @@ python3 remove_unregistered.py
 2021-04-14 11:02:13,582 - INFO - removing torrent "Atomic Kitten - Feels So Good (2002) [7243 5433722 2]" reason: "xxxxxxxx.xxxx: Error: Unregistered torrent"
 2021-04-14 11:02:13,974 - INFO - removing torrent "VA-Clap-(COUD_11)-12INCH_VINYL-FLAC-199X-YARD" reason: "flacsfor.me: Error: Unregistered torrent"
 2021-04-14 11:02:14,533 - INFO - removing torrent "Headnodic - Tuesday (2002) - WEB FLAC" reason: "flacsfor.me: Error: Unregistered torrent"
-```
-
-## 低延迟智能令牌(deprecated)
-
-deprecated：`filter.py`使用irssi调用并加上参数`--skip-api`和`--force-accept`即可代替此功能：
-```
-"/absolute/path/to/filter.py" --file "$(TorrentPathName)" --skip-api --force-accept
-```
-
-### 填写配置信息
-* `CONFIG["filter"]["dest_dir"]`
-* `CONFIG["dic"/"red"/"ops"]`的`"token_thresh"`
-
-如果要使用本脚本，配置文件内所有路径必须是绝对路径。
-如果只使用本脚本，则无需填写登录信息(cookie和apikey),。
-
-### 运行
-```
-python3 fast_token.py https://xxxxxxxxxxx
-```
-其中右侧的参数是种子原本的链接
-
-### 配置autodl
-修改preference->action，像这样，让每次它遇到新种子就调用`fast_token.py`并传入种子链接：
-
-![1.JPG](https://i.loli.net/2021/04/18/7Hf4ksSnAlPYQaF.jpg)
-
-上面填python可执行文件的路径，下面填
-```
-/absolute/path/to/fast_token.py $(TorrentUrl)
-```
-
-### 部分log节选
-隐私已隐藏
-```
-2021-04-17 19:30:44,079 - INFO - fast token: downloading from url: https://xxxxxxxx.xxxx/torrents.php?action=download&id=49187&authkey=xxxxxxxxxxxxxxxxx&torrent_pass=xxxxxxxxxxxxxxxxx
-2021-04-17 19:30:44,863 - INFO - saving to /home7/fishpear/rss/watch/xxxxxxxxxxxxxxxxx.torrent
-2021-04-17 19:30:44,863 - INFO - getting fl: https://xxxxxxxx.xxxx/torrents.php?action=download&id=49187&authkey=xxxxxxxxxxxxxxxxx&torrent_pass=xxxxxxxxxxxxxxxxx&usetoken=1
 ```
 
 ## 向我报bug、提需求

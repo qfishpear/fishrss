@@ -36,7 +36,7 @@ Redacted, Orpheus and Dicmusic are now supported.
 
 ## Functionalities
 * Filter by uploader. You can customize some filter conditions including a ban-list of uploaders. No restriction on BT client.
-* Spend tokens wisely. The filter will spend tokens if the torrent size is within a configured range. No restriction on BT client.
+* Spend tokens wisely. The filter will spend tokens if the torrent size is within a configured range. No restriction on BT client. RED is not supported in this feature because of its rule.
 * Autoban. Automatically ban an uploader if your ratio is too low. Only deluge is supported.
 * Export deluge statistics.
 * Delete unregistered torrents in deluge, along with their files.
@@ -128,7 +128,7 @@ In sublime and other mainstream text editors, select the piece of code that you 
 
 ## Filter by uploader and use tokens by torrent size `filter.py`
 
-In a word, this script monitors new torrent files in `source_dir`, save the ones that fullfills given conditions to `dest_dir`, and then spend the tokens according to the torrent size limit.
+In a word, this script monitors new torrent files in `source_dir`, saves the ones that satisfy given conditions to `dest_dir`, and then spends the tokens according to the torrent size limit.
 
 ### Warning
 * Filtering will slightly increase latency comparing to the raw irssi-autodl and might have influence on the racing performance.
@@ -139,7 +139,7 @@ In a word, this script monitors new torrent files in `source_dir`, save the ones
 * All entries in `CONFIG["filter"]`：`"source_dir"`, `"dest_dir"`, `"default_behavior"`
 * For dic/red/ops, fill the following entries in `CONFIG["dic"/"red"/"ops"]` correspondingly:
 * all entries in `"filter_config"`: `"name"`, `"banlist"`, `"media"`, `"format"`, `"sizelim"`
-* `"token_thresh"`
+* `"token_thresh"` (except for red)
 
 ### Run
 
@@ -148,9 +148,9 @@ Just run
 ```
 python3 filter.py
 ```
-It will monitor new .torrent files in `source_dir`, save the ones that fullfill given conditions to `dest_dir`, and spend the tokens according to the torrent size limit.
+It will monitor new .torrent files in `source_dir`, saves the ones that satisfy given conditions to `dest_dir`, and spends the tokens according to the torrent size limit.
 
-To ease your anxiety of a blank screen, it will print a line of "tick" every minute.
+To ease the anxiety of a blank screen, it will print a line of "tick" every minute.
 
 If `config.py` is changed, the `filter.py` should be restarted. Press `ctrl-C` to shut it down and run again.
 

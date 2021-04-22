@@ -180,6 +180,10 @@ class REDApi(GazelleApi):
         return "https://redacted.ch/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
             tid, self.authkey, self.torrent_pass)
     
+    # override fl link for RED to abide the rule
+    def get_fl_url(self, tid):
+        raise NotImplementedError
+
 class DICApi(GazelleApi):
 
     def __init__(self, **kwargs):
