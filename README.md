@@ -34,7 +34,6 @@ English Version of README: [README-en.md](https://github.com/qfishpear/fishrss/b
     - [填写配置信息](#填写配置信息-3)
     - [运行](#运行-3)
     - [配置autodl](#配置autodl)
-    - [参数解释](#参数解释-2)
     - [部分log节选](#部分log节选-2)
   - [向我报bug、提需求](#向我报bug提需求)
 # Gazelle r种增强脚本
@@ -241,6 +240,8 @@ python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxx
 
 ## 自动拉黑`autoban.py`
 本脚本会读取deluge里种子的信息，将满足设定条件的发种人添加到`CONFIG["red"/"ops"/"dic]["filter_config"]["banlist"]`文件内
+
+此脚本和`filter.py`分别独立运行，二者只通过banlist文件进行交互。
 
 ### 拉黑规则
 

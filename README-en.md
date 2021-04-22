@@ -12,7 +12,7 @@
     - [Warning](#warning)
     - [Configuration](#configuration-1)
     - [Run](#run)
-      - [Mode A：Monitor a directory](#mode-amonitor-a-directory)
+      - [Mode A: Monitor a directory](#mode-a-monitor-a-directory)
       - [Mode B: Call by parameters](#mode-b-call-by-parameters)
     - [Parameters](#parameters)
     - [some pieces of log (in monitoring mode):](#some-pieces-of-log-in-monitoring-mode)
@@ -128,11 +128,11 @@ In sublime and other mainstream text editors, select the piece of code that you 
 
 ## Filter by uploader and use tokens by torrent size `filter.py`
 
-In a word, this script monitors new torrent files in `source_dir`, save the ones that fullfills given conditions to `dest_dir`, and spend the tokens according to the torrent size limit.
+In a word, this script monitors new torrent files in `source_dir`, save the ones that fullfills given conditions to `dest_dir`, and then spend the tokens according to the torrent size limit.
 
 ### Warning
 * Filtering will slightly increase latency comparing to the raw irssi-autodl and might have influence on the racing performance.
-* It won't check if your tokens are used up. If tokens are used up, it will still let the torrent downloaded. So keep an eye on how many tokens are left if you're short in buffer.
+* It won't check if your tokens are used up. If tokens are used up, it will still leave the torrent downloaded. So keep an eye on how many tokens are left if you're short in buffer.
 
 ### Configuration
 
@@ -143,14 +143,14 @@ In a word, this script monitors new torrent files in `source_dir`, save the ones
 
 ### Run
 
-#### Mode A：Monitor a directory
+#### Mode A: Monitor a directory
 Just run
 ```
 python3 filter.py
 ```
 It will monitor new .torrent files in `source_dir`, save the ones that fullfill given conditions to `dest_dir`, and spend the tokens according to the torrent size limit.
 
-To ease your anxiety a blank screen, it will print a line of "tick" every minute.
+To ease your anxiety of a blank screen, it will print a line of "tick" every minute.
 
 If `config.py` is changed, the `filter.py` should be restarted. Press `ctrl-C` to shut it down and run again.
 
@@ -237,7 +237,9 @@ The latter one should ideally have negligible latency increment comparing to "sa
 ```
 
 ## Automatically ban uploaders `autoban.py`
-This script read the statistics from deluge, add the uploaders who fullfill given conditions to file `CONFIG["red"/"ops"/"dic]["filter_config"]["banlist"]`
+This script read the statistics from deluge, add the uploaders who fullfill given conditions to file `CONFIG["red"/"ops"/"dic]["filter_config"]["banlist"]`.
+
+`autoban.py` runs independently with `filter.py` and only interacts with it by the banlist file.
 
 ### Rule of banning
 
