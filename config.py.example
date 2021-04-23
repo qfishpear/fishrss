@@ -14,7 +14,8 @@ FILTER_CONFIG_TEMPLATE = {
     # 存储被ban用户列表的文件，不ban填None，手动编辑此文件时请一行一个用户名
     # 每次来新种子的时候会重新读取这个文件，autoban.py和filter.py可以分别独立运行
     "banlist" : "/home7/fishpear/rss/ban_red.txt",
-    # 存储白名单用户列表的文件，此列表里发的种无条件接受，不需要填None，手动编辑此文件时请一行一个用户名
+    # 存储白名单用户列表的文件，不需要填None，手动编辑此文件时请一行一个用户名
+    # 注意，这个不代表白名单模式，它的意思仅仅是此文件里的用户发的种子会被无条件接受而已
     # 每次来新种子的时候会重新读取这个文件
     "whitelist" : "/home7/fishpear/rss/white_red.txt",
     # 允许的媒体类型，必须是set类型，无限制填None

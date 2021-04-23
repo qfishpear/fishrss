@@ -14,8 +14,9 @@ FILTER_CONFIG_TEMPLATE = {
     # if you don't want to ban anyone, let it be "None"
     # it will be re-read each time new torrents are found. 
     "banlist" : "/home7/fishpear/rss/ban_red.txt",
-    # a text file of whitelisted uploaders. Uploaders in this list will be accepted regardless of anything.
-    # if you don't want to whitelist anyone, let it be "None"
+    # a text file of whitelisted uploaders. If you don't want to whitelist anyone, let it be "None"。
+    # notice: this does not indicate a "whitelist" mode, 
+    # it simply bypasses other filter conditions for the whitelisted uploaders.
     # it will be re-read each time new torrents are found. 
     "whitelist" : "/home7/fishpear/rss/white_red.txt",
     # accepted media types Must be "None" or a set of string
