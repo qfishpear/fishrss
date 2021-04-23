@@ -78,20 +78,22 @@ class GazelleApi(object):
         js = self._query(params={"action":"index"}, use_cache=False)
         if js["status"] == "failure":
             if "error" in js.keys() and js["error"] == "bad credentials":
-                self.logger.info("{}的鉴权凭证(cookie/apikey)填写不正确: {}".format(
+                self.logger.error("{}的鉴权凭证(cookie/apikey)填写不正确: {}".format(
                     self.apiname, repr(js)))
                 assert js["error"] != "bad credential"
-        assert js["status"] == "success", "{}鉴权错误：{}".format(self.apiname, repr(js))
+        if js["status"] != "success":
+            self.logger.error("{}鉴权错误：{}".format(self.apiname, repr(js)))
+            assert js["status"] == "success"
         uinfo = js["response"]
         self.username = uinfo["username"]
         self.uid = uinfo["id"]
         if self.authkey != uinfo["authkey"]:
-            self.logger.warning("{}的authkey填写错误或过期，应当为(it should be) \"{}\"，而不是(but not) \"{}\"。"
+            self.logger.warning("{}的authkey填写错误或过期，应当为(authkey should be) \"{}\"，而不是(but not) \"{}\"。"
                                 "如果只是过期，则这不一定会导致错误，"
                                 "但如果发现脚本运行不正常（比如token无法正常使用）请按照提示修改。".format(
                                 self.apiname, uinfo["authkey"], self.authkey))
         if self.torrent_pass != uinfo["passkey"]:
-            self.logger.error("{}的torrent_pass填写错误，应为\"{}\"，而不是\"{}\"".format(
+            self.logger.error("{}的torrent_pass填写错误，应当为(torrent_pass should be) \"{}\"，而不是(but not) \"{}\"".format(
                                 self.apiname, uinfo["passkey"], self.torrent_pass))
             assert self.torrent_pass == uinfo["passkey"]
         self.logger.info("{} logged in successfully, username：{} uid: {}".format(self.apiname, self.username, self.uid))        
