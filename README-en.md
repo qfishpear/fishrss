@@ -138,7 +138,7 @@ In a word, this script monitors new torrent files in `source_dir`, saves the one
 
 * All entries in `CONFIG["filter"]`：`"source_dir"`, `"dest_dir"`, `"default_behavior"`
 * For dic/red/ops, fill the following entries in `CONFIG["dic"/"red"/"ops"]` correspondingly:
-* all entries in `"filter_config"`: `"name"`, `"banlist"`, `"media"`, `"format"`, `"sizelim"`
+* all entries in `"filter_config"`: `"name"`, `"banlist"`, `"whitelist"`, `"media"`, `"format"`, `"sizelim"`
 * `"token_thresh"` (only for dic)
 
 ### Run

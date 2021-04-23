@@ -6,7 +6,7 @@ import traceback
 def check_path(path, name):
     if path is not None:
         if not os.path.exists(path):
-            logger.info("{} does NOT exist, please create:{}".format(name, path))
+            logger.warning("{} does NOT exist, please create:{}".format(name, path))
 
 # filter
 check_path(CONFIG["filter"]["source_dir"], "source_dir")
@@ -18,6 +18,7 @@ for site in SITE_CONST.keys():
         logger.warning("{} is not configured".format(site))
     else:
         check_path(CONFIG[site]["filter_config"]["banlist"], "{}'s banlist".format(site))
+        check_path(CONFIG[site]["filter_config"]["whitelist"], "{}'s whitelist".format(site))
         if "autoban" in CONFIG[site].keys():
             if CONFIG[site]["filter_config"]["banlist"] is None:
                 logger.warning("{} set \"autoban\" but without banlist")

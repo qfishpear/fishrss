@@ -5,6 +5,7 @@ class TorrentFilter(object):
     FILTER_CONFIG_TEMPLATE = {
         "name": "redfilter",
         "banlist" : "/home7/fishpear/rss/ban_red.txt",
+        "whitelist" : "/home7/fishpear/rss/white_red.txt",
         "media" : set(["CD", "Vinyl", "WEB"]),
         "format": set(["FLAC", "WAV"]),
         "sizelim": (100 * 1024**2, 1024**3),
@@ -41,9 +42,15 @@ class TorrentFilter(object):
         self.logger.info("tid: {} uploader: {} media: {} format: {} size: {:.1f}MB".format(
             tid, uploader, media, file_format, size / 1024**2,
         ))
+        if self.config["whitelist"] is not None:
+            with open(self.config["whitelist"], "r") as f:
+                whitelisted_users = set([line.strip() for line in f])
+            if uploader in whitelisted_users:
+                self.logger.info("whitelisted uploader: {}".format(uploader))
+                return "accept"
         if self.config["banlist"] is not None:
             with open(self.config["banlist"], "r") as f:
-                bannedusers = set([line.strip() for line in f])            
+                bannedusers = set([line.strip() for line in f])
             if uploader in bannedusers:
                 return "banned user"
         if self.config["media"] is not None:

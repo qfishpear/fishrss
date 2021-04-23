@@ -154,7 +154,7 @@ python里，注释的意思是在一行代码前面添加井号#
 
 * `CONFIG["filter"]`下的所有信息：`"source_dir"`, `"dest_dir"`, `"default_behavior"`
 * 对于海豚/red/ops，分别填写对应`CONFIG["dic"/"red"/"ops"]`的以下内容：
-* `"filter_config"`下的所有信息：`"name"`, `"banlist"`, `"media"`, `"format"`, `"sizelim"`
+* `"filter_config"`下的所有信息：`"name"`, `"banlist"`, `"whitelist"`, `"media"`, `"format"`, `"sizelim"`
 * `"token_thresh"`（仅dic可以填写）
 
 ### 运行
