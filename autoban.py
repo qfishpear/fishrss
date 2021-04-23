@@ -42,7 +42,7 @@ logger.info("{} torrents in deluge".format(len(tlist)))
 def work(site):
     banlist = CONFIG[site]["filter_config"]["banlist"]
     api = common.get_api(site)
-    AUTOBAN = CONFIG["red"]["autoban"]
+    AUTOBAN = CONFIG[site]["autoban"]
 
     # 2. 按uploader分类
     uploaders = defaultdict(lambda: list())
