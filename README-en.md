@@ -36,7 +36,7 @@ Redacted, Orpheus and Dicmusic are now supported.
 
 ## Functionalities
 * Filter by uploader. You can customize some filter conditions including a ban-list of uploaders. No restriction on BT client.
-* Spend tokens wisely. The filter will spend tokens if the torrent size is within a configured range. No restriction on BT client. RED is not supported in this feature because of its rule.
+* Spend tokens wisely. The filter will spend tokens if the torrent size is within a configured range. No restriction on BT client. RED/OPS is not supported in this feature because of its rule.
 * Autoban. Automatically ban an uploader if your ratio is too low. Only deluge is supported.
 * Export deluge statistics.
 * Delete unregistered torrents in deluge, along with their files.
@@ -139,7 +139,7 @@ In a word, this script monitors new torrent files in `source_dir`, saves the one
 * All entries in `CONFIG["filter"]`：`"source_dir"`, `"dest_dir"`, `"default_behavior"`
 * For dic/red/ops, fill the following entries in `CONFIG["dic"/"red"/"ops"]` correspondingly:
 * all entries in `"filter_config"`: `"name"`, `"banlist"`, `"media"`, `"format"`, `"sizelim"`
-* `"token_thresh"` (except for red)
+* `"token_thresh"` (only for dic)
 
 ### Run
 

@@ -167,8 +167,8 @@ CONFIG = {
     #         "format"  : set(["FLAC"]),
     #         "sizelim" : (100 * MB, 1 * GB),
     #     },
-    #     # 体积在这个区间内时自动使用token
-    #     "token_thresh": (100 * MB, 2 * GB),
+    #     # ops staff说red规则不允许自动使用token，请不要修改"token_thresh"（修改了也没用）
+    #     "token_thresh": (0, -1),
     #     # 自动ban人脚本条件，如果需要对ops使用该脚本，请取消以下的注释：
     #     # 填写时，请参考上面的模板AUTOBAN_TEMPLATE和给出的样例
     #     # "autoban" : {

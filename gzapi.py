@@ -217,3 +217,7 @@ class OPSApi(GazelleApi):
     def get_dl_url(self, tid):
         return "https://orpheus.network/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
             tid, self.authkey, self.torrent_pass)
+
+    # override fl link for RED to abide the rule
+    def get_fl_url(self, tid):
+        raise NotImplementedError

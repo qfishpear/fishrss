@@ -39,7 +39,7 @@ English Version of README: [README-en.md](https://github.com/qfishpear/fishrss/b
 ## 功能
 有以下主要功能
 * 种子过滤。对irssi或者别的方式得到的种子进行个性化过滤，目前支持按体积/发行类别/格式来过滤，并支持根据拉黑列表过滤发布者，对bt客户端没有要求
-* 智能使用令牌。根据体积限制对符合要求的种子使用令牌。对bt客户端没有要求。由于违反规则RED不支持此功能
+* 智能使用令牌。根据体积限制对符合要求的种子使用令牌。对bt客户端没有要求。由于违反规则RED/OPS不支持此功能
 * 自动拉黑。自动拉黑低分享率种子的发布者，仅支持deluge
 * deluge数据导出，方便分析刷流情况
 * deluge删除网站上被删种的种子（unregistered torrents）
@@ -155,7 +155,7 @@ python里，注释的意思是在一行代码前面添加井号#
 * `CONFIG["filter"]`下的所有信息：`"source_dir"`, `"dest_dir"`, `"default_behavior"`
 * 对于海豚/red/ops，分别填写对应`CONFIG["dic"/"red"/"ops"]`的以下内容：
 * `"filter_config"`下的所有信息：`"name"`, `"banlist"`, `"media"`, `"format"`, `"sizelim"`
-* `"token_thresh"`（对RED不需要填写）
+* `"token_thresh"`（仅dic可以填写）
 
 ### 运行
 

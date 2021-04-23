@@ -6,4 +6,5 @@ __pycache__/
 cache/
 tocheck/
 watch/
+private/
 *.py
