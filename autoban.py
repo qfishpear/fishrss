@@ -106,7 +106,7 @@ def work(site):
 
 if args.site is None:
     for site in SITE_CONST.keys():
-        if "autoban" in CONFIG[site].keys():
+        if site in CONFIG.keys() and "autoban" in CONFIG[site].keys():
             common.error_catcher(work, site=site)
 else:
     common.error_catcher(work, site=args.site)
