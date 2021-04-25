@@ -159,6 +159,31 @@ class GazelleApi(object):
             "type":"uploaded",
         })
 
+    def search(self, search_params : dict, **kwargs):
+        params = search_params.copy()
+        params["action"] = "browse"
+        return self._query(params=params, **kwargs)
+
+    def search_torrent_by_filename(self, filename, **kwargs):
+        def _escape(s):
+            """
+            replace characters to space except alphabet and numbers
+            """
+            s2 = ""
+            for ch in s:
+                if ch.isalnum():
+                    s2 += ch
+                else:
+                    s2 += " "
+            s = s2
+            while s.replace("  ", " ") != s:
+                s = s.replace("  ", " ")
+            return s
+        return self.search(search_params={
+            # 由于煞笔的按文件名搜索功能有毒，搜文件名时把文件名中非字母数字的部分全部去掉
+            "filelist":_escape(filename),
+        }, **kwargs)
+
     def get_dl_url(self, tid):
         raise NotImplementedError
 
@@ -225,6 +250,6 @@ class OPSApi(GazelleApi):
         return "https://orpheus.network/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
             tid, self.authkey, self.torrent_pass)
 
-    # override fl link for RED to abide the rule
+    # override fl link for OPS to abide the rule
     def get_fl_url(self, tid):
         raise NotImplementedError
