@@ -30,6 +30,12 @@ English Version of README: [README-en.md](https://github.com/qfishpear/fishrss/b
     - [警告](#警告-1)
     - [功能](#功能-1)
     - [运行](#运行-2)
+  - [扫描文件夹辅种`reseed.py`](#扫描文件夹辅种reseedpy)
+    - [填写配置信息](#填写配置信息-3)
+    - [运行](#运行-3)
+    - [辅种结果](#辅种结果)
+    - [参数解释](#参数解释-2)
+    - [部分log节选](#部分log节选-2)
   - [向我报bug、提需求](#向我报bug提需求)
 # Gazelle r种增强脚本
 本脚本集合主要目的是增强gazelle站里r种刷流的体验
@@ -43,6 +49,7 @@ English Version of README: [README-en.md](https://github.com/qfishpear/fishrss/b
 * 自动拉黑。自动拉黑低分享率种子的发布者，仅支持deluge
 * deluge数据导出，方便分析刷流情况
 * deluge删除网站上被删种的种子（unregistered torrents）
+* 扫描文件夹辅种。对bt客户端没有要求。
 
 
 ## 安装依赖
@@ -325,6 +332,67 @@ python3 remove_unregistered.py
 2021-04-14 11:02:13,582 - INFO - removing torrent "Atomic Kitten - Feels So Good (2002) [7243 5433722 2]" reason: "xxxxxxxx.xxxx: Error: Unregistered torrent"
 2021-04-14 11:02:13,974 - INFO - removing torrent "VA-Clap-(COUD_11)-12INCH_VINYL-FLAC-199X-YARD" reason: "flacsfor.me: Error: Unregistered torrent"
 2021-04-14 11:02:14,533 - INFO - removing torrent "Headnodic - Tuesday (2002) - WEB FLAC" reason: "flacsfor.me: Error: Unregistered torrent"
+```
+## 扫描文件夹辅种`reseed.py`
+本脚本会扫描给定文件夹下的所有子文件夹，在给定站点里搜索所有这些文件夹可以的种子。
+
+注意：由于自动化的搜索方式不能面面俱到，不代表所有搜到的种子都可以正确辅种，也不代表所有没搜到的文件夹无法辅种。少数搜索到的种子可能出现文件名重命名以及其他不可预知的问题，辅种时请在添加前关闭自动开始下载。
+
+### 填写配置信息
+除了必填信息以外不需要填写额外的信息。
+
+### 运行
+
+假如你的音乐文件存在文件夹`~/downloads`下，你要为海豚辅种，辅种的所有结果存在文件夹`~/results`下，则运行
+```
+python3 reseed.py --site dic --dir ~/downloads --result-dir ~/results
+```
+即可。注意`--result-dir`所带的文件夹必须已经创建好。
+
+运行到一半时退出，下次重新执行的时候会跳过上次扫描过的文件夹，如果不想跳过想重新扫描，请删除`--result-dir`所指定的文件夹下的`scan_history.txt`文件。
+
+你也可以用`--single-dir`为单个文件夹辅种，样例：假如你有一个下好了的种子存在`~/downloads/Masashi Sada (さだまさし) - さだ丼～新自分風土記III～ (2021) [24-96]/	`里，则运行：
+```
+python3 reseed.py --site dic --single-dir ~/downloads/Masashi\ Sada\ \(さだまさし\)\ -\ さだ丼～新自分風土記III～\ \(2021\)\ \[24-96\]/ --result-dir ~/results
+```
+请注意路径名里带空格或者其他奇怪字符的时候要进行转义，推荐使用tab输入这些长目录。
+
+### 辅种结果
+
+`--result-dir`所指定的文件夹下会生成：
+* `torrent/`，一个文件夹，里面存了所有下载的.torrent文件，所有.torrent文件的文件名为 "辅种文件夹名.torrent"。注：利用这个命名方式可以方便辅那种只改了文件夹名的种子。
+* `result_mapping.txt`，辅种结果，每行为一个tab（制表符）隔开的文件夹名和种子的torrentid，如果扫到的话torrentid会填为-1。
+* `result_url.txt`，每行一个可以辅种的种子的下载链接
+* `result_url_undownloaded.txt`，由于流控，部分情况下下载.torrent文件会失败，这些失败了的种子的下载链接会放在这个文件里。
+* `scan_history.txt`，曾经扫描过的文件夹，一行一个，你如果运行了一半意外退出了的话，重新运行会跳过这里面记录的扫描过的文件夹
+
+### 参数解释
+* `--dir`，批量辅种所在音乐文件所在的总文件夹
+* `--single-dir` 扫描单个种子辅种时的音乐文件所在文件夹
+* `--site` 对于海豚/RED/OPS分别填dic/red/ops（小写）
+* `--result-dir` 存储扫描出的辅种信息的文件夹
+* `--api-frequency` api调用频率限制。如果你还有其他使用api的脚本在持续运行，为了不超过api频率限制你可以手动指定api调用频率。单位：次每10秒。
+* `--no-download` 只保存辅种信息，不下载.torrent文件
+
+### 部分log节选
+```
+fishpear@sea:~/rss$ python3 reseed.py --site dic --dir ~/downloads --result-dir ~/results
+2021-04-25 16:22:16,799 - INFO - file automatically created: /home7/fishpear/results/scan_history.txt
+2021-04-25 16:22:16,799 - INFO - file automatically created: /home7/fishpear/results/result_url.txt
+2021-04-25 16:22:16,799 - INFO - file automatically created: /home7/fishpear/results/result_mapping.txt
+2021-04-25 16:22:16,800 - INFO - directory automatically created: /home7/fishpear/results/torrents/
+2021-04-25 16:22:16,800 - INFO - file automatically created: /home7/fishpear/results/result_url_undownloaded.txt
+2021-04-25 16:22:16,800 - INFO - dic querying action=index
+2021-04-25 16:22:17,588 - INFO - dic logged in successfully, username：fishpear uid: 1132
+2021-04-25 16:22:17,632 - INFO - 1797/1797 unscanned folders found in /home7/fishpear/downloads, start scanning for cross-seeding dic
+2021-04-25 16:22:17,632 - INFO - 1/1797 /home7/fishpear/downloads/Eliane Radigue - Backward
+2021-04-25 16:22:17,632 - INFO - dic querying filelist=3+Songs+Of+Milarepa+1+2+Remastered+2021+flac&action=browse
+2021-04-25 16:22:18,329 - INFO - not found
+...
+2021-04-25 16:22:19,711 - INFO - 4/1797 /home7/fishpear/downloads/55 Schubert and Boccherini String Quintets
+2021-04-25 16:22:19,711 - INFO - dic querying filelist=03+Quintet+in+C+Major+for+Two+Violins+Viola+and+Two+Cellos+D+956+III+Scherzo+Presto+Trio+Andante+sostenuto+flac&action=browse
+2021-04-25 16:22:20,406 - INFO - found, torrentid=49506
+2021-04-25 16:22:21,517 - INFO - saving to /home7/fishpear/results/torrents/55 Schubert and Boccherini String Quintets.torrent
 ```
 
 ## 向我报bug、提需求
