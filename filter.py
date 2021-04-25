@@ -7,6 +7,7 @@ import traceback
 import bencode
 import hashlib
 import urllib
+import collections
 import base64
 import argparse
 from multiprocessing.pool import ThreadPool
@@ -81,12 +82,15 @@ def handle_accept(torrent):
             f.write(bencode.encode(torrent))    
 
 def _handle(*,
-            torrent,
-            tinfo,
+            torrent : collections.OrderedDict,
+            tinfo : dict,
             filter : TorrentFilter,
             token_thresh : tuple,
             fl_url=None
     ):
+    """
+    main handle logic
+    """
     logger.info("{} torrentid={} infohash={}".format(torrent["info"]["name"], tinfo["tid"], tinfo["hash"]))
     check_result = filter.check_tinfo(**tinfo)
     if check_result != "accept" and not args.force_accept:
@@ -125,7 +129,14 @@ def handle_default(torrent):
     if CONFIG["filter"]["default_behavior"] == "accept":
         handle_accept(torrent)
 
-def handle_gz(*, torrent, api_response, fl_url):    
+def handle_gz(*,
+              torrent,
+              api_response,
+              fl_url
+    ):
+    """
+    congregate torrent information         
+    """
     tinfo = dict()
     # update info from torrent
     tinfo["tid"] = common.get_params_from_url(torrent["comment"])["torrentid"]
@@ -146,7 +157,7 @@ def handle_gz(*, torrent, api_response, fl_url):
         fl_url=fl_url,
     )
 
-def handle_file(filepath):
+def handle_file(filepath : str):
     with open(filepath, "rb") as f:
         raw = f.read()
     torrent = bencode.decode(raw)
@@ -174,7 +185,7 @@ def handle_file(filepath):
         fl_url=fl_url,
     )
 
-def handle_url(dl_url):
+def handle_url(dl_url : str):
     def _call_api(api, tid):
         logger.info("calling api: {} tid: {}".format(api.apiname, tid))
         api_response = api.query_tid(tid)
@@ -194,6 +205,7 @@ def handle_url(dl_url):
         return
     tid = common.get_params_from_url(dl_url)["id"]
     api = configured_sites[site]["api"]
+    # call api & download torrent in parallel
     pool = ThreadPool(processes=2)
     t_dl = pool.apply_async(_download_torrent, args=(dl_url,))
     if not args.skip_api:
@@ -215,6 +227,9 @@ def handle_url(dl_url):
     )
 
 def check_dir():
+    """
+    check new torrents in source_dir 
+    """
     flist = os.listdir(CONFIG["filter"]["source_dir"])
     if len(flist) == 0:
         return
@@ -230,7 +245,7 @@ if args.url is not None:
 elif args.file is not None:
     common.error_catcher(func=handle_file, filepath=args.file)
 else:
-    # 持续监控文件夹
+    # monitor directory
     logger.info("monitoring torrent files in {}".format(CONFIG["filter"]["source_dir"]))
     cnt = 0
     while True:
