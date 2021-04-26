@@ -361,7 +361,7 @@ python3 reseed.py --site dic --single-dir ~/downloads/Masashi\ Sada\ \(さだま
 
 `--result-dir`所指定的文件夹下会生成：
 * `torrent/`，一个文件夹，里面存了所有下载的.torrent文件，所有.torrent文件的文件名为 "辅种文件夹名.torrent"。注：利用这个命名方式可以方便辅那种只改了文件夹名的种子。
-* `result_mapping.txt`，辅种结果，每行为一个tab（制表符）隔开的文件夹名和种子的torrentid，如果扫到的话torrentid会填为-1。
+* `result_mapping.txt`，辅种结果，每行为一个tab（制表符）隔开的文件夹名和种子的torrentid，如果没扫到的话torrentid会填为-1。
 * `result_url.txt`，每行一个可以辅种的种子的下载链接
 * `result_url_undownloaded.txt`，由于流控，部分情况下下载.torrent文件会失败，这些失败了的种子的下载链接会放在这个文件里。
 * `scan_history.txt`，曾经扫描过的文件夹，一行一个，你如果运行了一半意外退出了的话，重新运行会跳过这里面记录的扫描过的文件夹
