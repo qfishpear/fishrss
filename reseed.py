@@ -83,15 +83,15 @@ check_path(scan_history_path, is_file=True, auto_create=True)
 result_url_path = os.path.join(args.result_dir, "result_url.txt")
 check_path(result_url_path, is_file=True, auto_create=True)
 
-# mapping of scanned results, "{path}\t{result}" for each line
+# mapping of scanning results, "{path}\t{result}" for each line
 result_map_path = os.path.join(args.result_dir, "result_mapping.txt")
 check_path(result_map_path, is_file=True, auto_create=True)
 
-# scanned torrents
+# folder of downloaded .torrents files of scanning results
 result_torrent_path = os.path.join(args.result_dir, "torrents/")
 check_path(result_torrent_path, is_file=False, auto_create=True)
 
-# urls of scanned torrents that are unable to download, one torrent url per line
+# urls of .torrents files that are unable to download, one torrent url per line
 result_url_undownloaded_path = os.path.join(args.result_dir, "result_url_undownloaded.txt")
 check_path(result_url_undownloaded_path, is_file=True, auto_create=True)
 
@@ -159,10 +159,10 @@ def work(folder, api):
                                 "You can download it from your own browser.".format(
                                     tid, args.site, result_url_undownloaded_path))
                     logger.info("下载种子(id {})失败，这可能是因为触发了{}对于非浏览器下载该种子的限制。"
-                                "下载链接保存在{}里，你可以用你的浏览器从该链接下载种子".format(
+                                "失败种子的下载链接保存在{}里，你可以用你的浏览器从该链接下载种子".format(
                             tid, args.site, result_url_undownloaded_path))
                     if GLOBAL["cnt_dl_fail"] == 10:
-                        logger.info("suppress further hinting for downloading failure")
+                        logger.info("suppress further hinting for .torrent file downloading failure")
         with open(result_url_path, "a") as f:
             f.write("{}\n".format(dl_url))
         with open(result_map_path, "a") as f:
