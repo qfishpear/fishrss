@@ -139,15 +139,27 @@ def handle_gz(*,
     """
     tinfo = dict()
     # update info from torrent
-    tinfo["tid"] = common.get_params_from_url(torrent["comment"])["torrentid"]
+    if "comment" in torrent.keys():
+        tinfo["tid"] = int(common.get_params_from_url(torrent["comment"])["torrentid"])
     tinfo["size"] = sum([f["length"] for f in torrent["info"]["files"]])
     tinfo["hash"] = common.get_info_hash(torrent)
     # update info from api_response
     if api_response is not None:
         api_tinfo = api_response["response"]["torrent"]
+        if "tid" in tinfo.keys():
+            if tinfo["tid"] != api_tinfo["id"]:
+                logging.info("torrentid dismatch: {} from comment and {} from api response:".format(
+                    tinfo["tid"], api_tinfo["id"]
+                ))
+                del tinfo["tid"]
+        else:
+            tinfo["tid"] = api_tinfo["id"]
         tinfo["uploader"] = api_tinfo["username"]
         tinfo["media"] = api_tinfo["media"]
         tinfo["file_format"] = api_tinfo["format"]
+    if "tid" not in tinfo:
+        logging.warning("torrentid not found, using 0 as dummy")
+        tinfo["tid"] = 0
     site = common.get_torrent_site(torrent)
     _handle(
         torrent=torrent,
@@ -168,10 +180,10 @@ def handle_file(filepath : str):
         return
     api = configured_sites[site]["api"]
     tid = common.get_params_from_url(torrent["comment"])["torrentid"]
-    if site == "red" or site == "ops":
-        fl_url = None
-    else:
+    try:
         fl_url = api.get_fl_url(tid)
+    except:
+        fl_url = None
     if args.skip_api:
         api_response = None
     else:        
@@ -216,10 +228,10 @@ def handle_url(dl_url : str):
         api_response = t_api.get()
     else:
         api_response = None
-    if site == "red" or site == "ops":
-        fl_url = None
-    else:
+    try:
         fl_url = api.get_fl_url(tid)
+    except:
+        fl_url = None
     handle_gz(
         torrent=t_dl.get(),
         api_response=api_response,

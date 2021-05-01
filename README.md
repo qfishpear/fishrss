@@ -40,7 +40,7 @@ English Version of README: [README-en.md](https://github.com/qfishpear/fishrss/b
 # Gazelle r种增强脚本
 本脚本集合主要目的是增强gazelle站里r种刷流的体验
 
-目前支持海豚、red、ops
+目前支持海豚、red、ops、毒蛇
 
 ## 功能
 有以下主要功能
@@ -97,6 +97,7 @@ cp config.py.example config.py
 * 如果要使用海豚，至少需要填写`CONFIG["dic"]`里的`"api_cache_dir"`, `"cookies"`，`"authkey"`, `"torrent_pass"`
 * 如果要使用red，至少需要填写`CONFIG["red"]`里的`"api_cache_dir"`，`"authkey"`, `"torrent_pass"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
 * 如果要使用ops，至少需要填写`CONFIG["ops"]`里的`"api_cache_dir"`，`"authkey"`, `"torrent_pass"`, 而`"cookies"`和`"api_key"`两个要填至少一个，如果不填写`"cookies"`，请保持它被注释掉的状态
+* 如果要使用毒蛇，至少需要填写`CONFIG["snake"]`里的`"api_cache_dir"`，`"cookies"`，`"authkey"`, `"torrent_pass"`
 
 除了种子过滤以外如果要使用其他脚本，强烈建议填写`api_cache_dir`并创建对应文件夹，否则多次运行会反反复复向网站发同样的请求导致运行特别慢。脚本运行后此文件夹下应当生成了若干个json文件，是保存的网站api的缓存。
 
@@ -109,13 +110,15 @@ python3 check_config.py
 ```
 来检查，正确填写时，应当输出类似以下内容。当然，检查通过不代表config填写完全正确。
 ```
-2021-04-20 16:01:43,835 - INFO - dic querying action=index
-2021-04-20 16:01:44,616 - INFO - dic logged in successfully, username：fishpear uid: 1132
-2021-04-20 16:01:44,616 - INFO - red querying action=index
-2021-04-20 16:01:44,781 - INFO - red logged in successfully, username：fishpear uid: 50065
-2021-04-20 16:01:44,783 - INFO - ops querying action=index
-2021-04-20 16:01:45,099 - INFO - ops logged in successfully, username：fishpear uid: 21482
-2021-04-20 16:01:45,116 - INFO - deluge is correctly configured
+2021-04-30 22:17:21,335 - INFO - dic querying action=index
+2021-04-30 22:17:22,118 - INFO - dic logged in successfully, username：fishpear uid: 1132
+2021-04-30 22:17:22,119 - INFO - red querying action=index
+2021-04-30 22:17:22,604 - INFO - red logged in successfully, username：fishpear uid: 50065
+2021-04-30 22:17:22,606 - INFO - ops querying action=index
+2021-04-30 22:17:22,888 - INFO - ops logged in successfully, username：fishpear uid: 21482
+2021-04-30 22:17:22,889 - INFO - snake querying action=index
+2021-04-30 22:17:23,210 - INFO - snake logged in successfully, username：fishpear uid: 10084
+2021-04-30 22:17:23,228 - INFO - deluge is correctly configured
 ```
 
 ### 如何获取cookie, authkey, torrent_pass

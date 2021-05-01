@@ -189,6 +189,43 @@ CONFIG = {
     #     # },
     # },
     # ========================分割线3=============================
+    # snakepop配置信息，如果不需要刷snakepop请将分割线4内整段注释掉（默认是注释掉的）
+    # ========================分割线4=============================
+    # "snake":{
+    #     # 一个文件夹，保存曾经请求过的api回复，如果不需要可以填None
+    #     "api_cache_dir" : "~/.cache/fishrss/snake",
+    #     # 关于cookie的填写请参考`README.rss.md`里的描述
+    #     "cookies"       : {
+    #         "session"   : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    #     },
+    #     # authkey和torrent_pass请随便复制一个种子的下载链接，里面有
+    #     "authkey"       : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     "torrent_pass"  : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     # filter_config的填写请参考上面的模板FILTER_CONFIG_TEMPLATE和给出的样例
+    #     "filter_config" : {
+    #         "name"    : "snakefilter",
+    #         "banlist" : None,
+    #         "whitelist" : None,
+    #         "media"   : None,
+    #         "format"  : set(["FLAC"]),
+    #         "sizelim" : None,
+    #     },
+    #     # 体积在这个区间内时自动使用令牌，样例：100MB-2GB，如果不想使用令牌请填一个非法的区间，比如(0,-1)
+    #     # 注意，即使令牌用完，本脚本依然会继续下载种子，此时等于下黑种，请关注令牌余量
+    #     "token_thresh": (100 * MB, 2 * GB),
+    #     # 自动ban人脚本条件，如果需要对snake使用该脚本，请取消以下的注释：
+    #     # 填写时，请参考上面的模板AUTOBAN_TEMPLATE和给出的样例
+    #     # "autoban" : {
+    #     #     "ratio" : [
+    #     #         {"count":1, "ratiolim":0.2},
+    #     #     ],
+    #     #     "ignore": {
+    #     #         "min_progress" : 0.3,
+    #     #         "max_time_added" : 36 * HOUR,
+    #     #     },
+    #     # },
+    # },
+    # ========================分割线4=============================
     # deluge客户端的登陆信息，如果不需要自动ban人脚本可以不填
     "deluge" : {
         "ip": "127.0.0.1",

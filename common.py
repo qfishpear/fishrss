@@ -8,7 +8,7 @@ import urllib
 import bencode
 
 from torrent_filter import TorrentFilter
-from gzapi import REDApi, DICApi, OPSApi
+from gzapi import REDApi, DICApi, OPSApi, SnakeApi
 from config import CONFIG
 
 # logger相关
@@ -44,7 +44,12 @@ SITE_CONST = {
         "domain": "orpheus.network",
         "tracker": "home.opsfet.ch",
         "source": "OPS",
-    }
+    },
+    "snake":{
+        "domain": "snakepop.art",
+        "tracker": "announce.snakepop.art",
+        "source": "Snakepop",
+    },
 }
 # api/filter相关
 def get_api(site, **kwargs):
@@ -85,6 +90,18 @@ def get_api(site, **kwargs):
             torrent_pass=OPS["torrent_pass"],
             **kwargs,
         )
+    elif site == "snake":
+        SNAKE = CONFIG["snake"]
+        api = SnakeApi(
+            cookies=SNAKE["cookies"],
+            logger=logger,
+            cache_dir=SNAKE["api_cache_dir"],
+            timeout=CONFIG["requests_timeout"],
+            authkey=SNAKE["authkey"],
+            torrent_pass=SNAKE["torrent_pass"],
+            **kwargs,
+        )
+
     return api
 def get_filter(site):
     assert site in CONFIG.keys(), "no configuration of {} found".format(site)

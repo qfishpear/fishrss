@@ -206,7 +206,7 @@ class REDApi(GazelleApi):
             timer=timer, 
             api_url="https://redacted.ch/ajax.php",
             **kwargs
-        )        
+        )
 
     def get_dl_url(self, tid):
         return "https://redacted.ch/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
@@ -229,6 +229,21 @@ class DICApi(GazelleApi):
 
     def get_dl_url(self, tid):
         return "https://dicmusic.club/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
+            tid, self.authkey, self.torrent_pass)
+
+class SnakeApi(GazelleApi):
+
+    def __init__(self, **kwargs):
+        super().__init__(
+            apiname="snake",
+            headers=FISH_HEADERS,
+            timer=Timer(5, 10.5),
+            api_url="https://snakepop.art/ajax.php",
+            **kwargs
+        )
+
+    def get_dl_url(self, tid):
+        return "https://snakepop.art/torrents.php?action=download&id={}&authkey={}&torrent_pass={}".format(
             tid, self.authkey, self.torrent_pass)
 
 class OPSApi(GazelleApi):
