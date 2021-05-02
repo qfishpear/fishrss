@@ -163,7 +163,7 @@ python里，注释的意思是在一行代码前面添加井号#
 ### 填写配置信息
 
 * `CONFIG["filter"]`下的所有信息：`"source_dir"`, `"dest_dir"`, `"default_behavior"`
-* 对于海豚/red/ops，分别填写对应`CONFIG["dic"/"red"/"ops"]`的以下内容：
+* 对于海豚/red/ops/毒蛇，分别填写对应`CONFIG["dic"/"red"/"ops"/"snake"]`的以下内容：
 * `"filter_config"`下的所有信息：`"name"`, `"banlist"`, `"whitelist"`, `"media"`, `"format"`, `"sizelim"`
 * `"token_thresh"`（仅dic可以填写）
 
@@ -244,7 +244,7 @@ python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxx
 ```
 
 ## 自动拉黑`autoban.py`
-本脚本会读取deluge里种子的信息，将满足设定条件的发种人添加到`CONFIG["red"/"ops"/"dic]["filter_config"]["banlist"]`文件内
+本脚本会读取deluge里种子的信息，将满足设定条件的发种人添加到`CONFIG["red"/"ops"/"dic"/"snake"]["filter_config"]["banlist"]`文件内
 
 此脚本和`filter.py`分别独立运行，二者只通过banlist文件进行交互。
 
@@ -257,10 +257,10 @@ python3 filter.py --url https://redacted.ch/torrents.php?action=download\&id=xxx
 
 ### 填写配置信息
 
-* 要对red/ops/dic进行自动拉黑，则`CONFIG["red"/"ops"/"dic"]["filter_config"]["banlist"]`必须已经填写
+* 要对red/ops/dic进行自动拉黑，则`CONFIG["red"/"ops"/"dic"/"snake"]["filter_config"]["banlist"]`必须已经填写
 * `CONFIG["deluge"]`下的所有信息：`"ip"`, `"port"`, `"username"`, `"password"`。其中ip和port应当和connection manager下的信息一致。username和password是deluge登陆webui所输的账号和密码，如果你登录的时候不需要输，可能可以随便填（关于这一点我也不是很确定）。<br>
 ![5.JPG](https://i.loli.net/2021/04/16/ZBVay3rjhCPK6Ui.jpg)
-* `config["red"/"ops"/"dic"]["autoban"]`下的所有信息
+* `config["red"/"ops"/"dic"/"snake"]["autoban"]`下的所有信息
 
 ### 运行
 第一次运行请加个参数`--init`
@@ -319,7 +319,7 @@ python3 gen_stats.py > stats.txt
 ### 功能
 删除所有deluge里还未下完的、且"Tracker Status"中含有"Unregistered torrent"字样的种子，**以及文件**。
 
-注意，如果red/dic/ops之外的种子里的tracker回复了这条信息一样会被删除。
+注意，如果red/dic/ops/毒蛇之外的种子里的tracker回复了这条信息一样会被删除。
 
 ### 运行
 
@@ -372,7 +372,7 @@ python3 reseed.py --site dic --single-dir ~/downloads/Masashi\ Sada\ \(さだま
 ### 参数解释
 * `--dir`，批量辅种所在音乐文件所在的总文件夹
 * `--single-dir` 扫描单个种子辅种时的音乐文件所在文件夹
-* `--site` 对于海豚/RED/OPS分别填dic/red/ops（小写）
+* `--site` 对于海豚/RED/OPS/毒蛇分别填dic/red/ops/snake（小写）
 * `--result-dir` 存储扫描出的辅种信息的文件夹
 * `--api-frequency` api调用频率限制。如果你还有其他使用api的脚本在持续运行，为了不超过api频率限制你可以手动指定api调用频率。单位：次每10秒。
 * `--no-download` 只保存辅种信息，不下载.torrent文件
