@@ -17,11 +17,10 @@ import common
 from common import logger
 import gzapi
 
-def getfoldersize(folder):
-    size = 0
-    for path, _, files in os.walk(folder):
-        size += sum([os.path.getsize(os.path.join(path, name)) for name in files])
-    return size
+IGNORED_PATH =[
+    "@eaDir", #dummy directory created by Synology
+    ".DS_Store", #dummy directory created by macOS
+]
 
 def check_path(path, is_file=False, auto_create=False):
     if path is not None:
@@ -103,9 +102,19 @@ GLOBAL["cnt_dl_fail"] = 0
 
 def work(folder, api):
     GLOBAL["scanned"] += 1
-    flist = sum([files for _, _, files in os.walk(folder)], [])
+
+    tsize = 0
+    flist = []
+    for path, _, files in os.walk(folder):
+        is_ignored = False
+        for ignore_str in IGNORED_PATH:
+            if ignore_str in path:
+                is_ignored = True
+        if not is_ignored:
+            tsize += sum([os.path.getsize(os.path.join(path, name)) for name in files])
+            flist += files
     flist.sort(key=lambda fname:-len(fname))
-    tsize = getfoldersize(folder)
+
     tid = -1
     # search for the files with top 10 longest name 
     for fname in flist[:5]:
@@ -123,6 +132,7 @@ def work(folder, api):
         # if it is impossible to find a match, just stop:
         if len(torrents) == 0 or resp["response"]["pages"] <= 1:
             break
+
     if tid == -1:
         logger.info("not found")
         with open(scan_history_path, "a") as f:
