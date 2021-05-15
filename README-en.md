@@ -28,6 +28,16 @@
     - [Functionality](#functionality)
     - [Run](#run-2)
     - [A piece of log：](#a-piece-of-log-1)
+  - [Crossseeding `reseed.py`](#crossseeding-reseedpy)
+    - [Configuration Required](#configuration-required-2)
+    - [Run](#run-3)
+      - [Mode A: scan all subdirectories](#mode-a-scan-all-subdirectories)
+      - [Mode B: scan one directory](#mode-b-scan-one-directory)
+      - [Mode C: crossseed multiple torrent files under a directory](#mode-c-crossseed-multiple-torrent-files-under-a-directory)
+      - [Mode D: crossseed single torrent file](#mode-d-crossseed-single-torrent-file)
+    - [Results](#results)
+    - [Parameters](#parameters-2)
+    - [a piece of log](#a-piece-of-log-2)
   - [Bug report and feature request](#bug-report-and-feature-request)
 # Gazelle Autodl Script Set
 This set of scripts aims on bringing better autodl experience in gazelle music trackers.
@@ -40,6 +50,7 @@ Redacted, Orpheus and Dicmusic are now supported.
 * Autoban. Automatically ban an uploader if your ratio is too low. Only deluge is supported.
 * Export deluge statistics.
 * Delete unregistered torrents in deluge, along with their files.
+* Cross-seed. Scan files in a directory and download the "crossseedable" torrents.
 
 ## Installation Instructions
 
@@ -339,6 +350,115 @@ The script only runs once, i.e. deletes once. For contineously running, use cron
 2021-04-14 11:02:13,582 - INFO - removing torrent "Atomic Kitten - Feels So Good (2002) [7243 5433722 2]" reason: "xxxxxxxx.xxxx: Error: Unregistered torrent"
 2021-04-14 11:02:13,974 - INFO - removing torrent "VA-Clap-(COUD_11)-12INCH_VINYL-FLAC-199X-YARD" reason: "flacsfor.me: Error: Unregistered torrent"
 2021-04-14 11:02:14,533 - INFO - removing torrent "Headnodic - Tuesday (2002) - WEB FLAC" reason: "flacsfor.me: Error: Unregistered torrent"
+```
+
+## Crossseeding `reseed.py`
+
+This script scans all sub-directories under a given directory and searchs in the tracker for torrents that can be crossseeded.
+
+It can also scan torrents under a given directory to see if it can be crossseeded in another tracker.
+
+Notice: The automatical way of searching can't be as perfect. Therefore it does NOT promise all found torrents can be correctly crossseeded, NOR does it promise all missed directories can not be crossseeded. A minority of torrents might have their files/directories renamed and other unexpected problems. Make sure your BT client does NOT automatically start when you add the scanned torrents.
+
+### Configuration Required
+
+No extra entries in `config.py` needed to fill, except [the mandatory ones](#which-entries-should-i-edit)
+
+However, if you have some irrelevant files/directories in your music directory, for example, `.DS_Store` in macOS, they will influence the scanning process. Add the files/directories you want to ignore to the `IGNORED_PATH` list in `reseed.py`.
+
+### Run
+
+If you terminated the script during running, the next time you run it, it will skip the sub-directories it scanned before. If you don't want to skip them, delete the `scan_history.txt` under the directory given by `--result-dir`.
+
+The directory given by `--result-dir` should be created before running the script.
+
+#### Mode A: scan all subdirectories
+For example, if all your music files are downloaded to `~/downloads` and you're trying to crossseed in RED and store the results in folder `~/results`, run:
+```
+python3 reseed.py --site red --dir ~/downloads --result-dir ~/results
+```
+
+#### Mode B: scan one directory
+
+Use `--single-dir` to crossseed for a single directory. 
+
+For example: if there are music files in `~/downloads/Masashi Sada (さだまさし) - さだ丼～新自分風土記III～ (2021) [24-96]/`, run:
+```
+python3 reseed.py --site dic --single-dir ~/downloads/Masashi\ Sada\ \(さだまさし\)\ -\ さだ丼～新自分風土記III～\ \(2021\)\ \[24-96\]/ --result-dir ~/results
+```
+Take care of the escape characters are required when coming up with spaces and some other characters. It's recommended to enter the directory names by `TAB`
+
+#### Mode C: crossseed multiple torrent files under a directory
+
+Use `--torrent-dir` to try to crossseed multiple .torrent files:
+
+For example: if there are .torrent files in `~/torrents`, run:
+```
+python3 reseed.py --site red --torrent-dir ~/torrents --result-dir ~/results
+```
+
+#### Mode D: crossseed single torrent file
+Use `--single-torrent` to try to crossseed one .torrent files:
+
+For example: if there is a torrent `~/torrents/The Call - Collected - 2019 (CD - FLAC - Lossless).torrent`, run:
+```
+python3 reseed.py --site red --single-torrent ~/torrents/The\ Call\ -\ Collected\ -\ 2019\ \(CD\ -\ FLAC\ -\ Lossless\).torrent --result-dir ~/results
+```
+
+### Results
+
+The following things will be generated under the directory given by `--result-dir`:
+* `torrent/`, a directory storing all the downloaded .torrent files. All .torrent files will be named by "name-of-crossseeding-directory.torrent". This way of naming may be helpful if the name of directory was changed by the uploader.
+* `result_mapping.txt`, the result of crossseeding. Each line contains a (directory / .torrent file) name and a torrent ID, seperated by a TAB (\t). If no torrent is found for crossseeding, the torrent ID would be -1.
+* `result_url.txt`, each line contains a download link of "crossseedable" torrents.
+* `result_url_undownloaded.txt`. Due to some tracker's limitation of downloading with scripts, some torrents will fail to download. The links of these torrents will be store in this file and you can manually download them.
+* `scan_history.txt`, each line contains the absolute path to a directory that has been scanned before. The crossseeding script will ignore the directories written in this file.
+
+### Parameters
+```
+usage: reseed.py [-h] (--dir DIR | --single-dir SINGLE_DIR) --site {dic,red,ops,snake} --result-dir RESULT_DIR
+                 [--api-frequency API_FREQUENCY] [--no-download]
+
+scan a directory to find torrents that can be cross-seeded on given tracker
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --dir DIR             folder for batch cross-seeding
+  --single-dir SINGLE_DIR
+                        folder for just one cross-seeding
+  --torrent-dir TORRENT_DIR
+                        folder containing .torrent files for cross-seeding
+  --single-torrent SINGLE_TORRENT
+                        one .torrent file for cross-seeding
+  --site {dic,red,ops,snake}
+                        the tracker to scan for cross-seeding.
+  --result-dir RESULT_DIR
+                        folder for saving scanned results
+  --api-frequency API_FREQUENCY
+                        if set, override the default api calling frequency. Unit: number of api call per 10 seconds (must be integer)
+  --no-download         if set, don't download the .torrent files. Only the id of torrents are saved
+```
+
+### a piece of log
+```
+fishpear@sea:~/rss$ python3 reseed.py --site dic --dir ~/downloads --result-dir ~/results
+2021-04-25 16:22:16,799 - INFO - file automatically created: /home7/fishpear/results/scan_history.txt
+2021-04-25 16:22:16,799 - INFO - file automatically created: /home7/fishpear/results/result_url.txt
+2021-04-25 16:22:16,799 - INFO - file automatically created: /home7/fishpear/results/result_mapping.txt
+2021-04-25 16:22:16,800 - INFO - directory automatically created: /home7/fishpear/results/torrents/
+2021-04-25 16:22:16,800 - INFO - file automatically created: /home7/fishpear/results/result_url_undownloaded.txt
+2021-04-25 16:22:16,800 - INFO - dic querying action=index
+2021-04-25 16:22:17,588 - INFO - dic logged in successfully, username：fishpear uid: 1132
+2021-04-25 16:22:17,632 - INFO - 1797/1797 unscanned folders found in /home7/fishpear/downloads, start scanning for cross-seeding dic
+2021-04-25 16:22:17,632 - INFO - 1/1797 /home7/fishpear/downloads/Eliane Radigue - Backward
+2021-04-25 16:22:17,632 - INFO - dic querying filelist=3+Songs+Of+Milarepa+1+2+Remastered+2021+flac&action=browse
+2021-04-25 16:22:18,329 - INFO - not found
+...
+2021-04-25 16:22:19,711 - INFO - 4/1797 /home7/fishpear/downloads/55 Schubert and Boccherini String Quintets
+2021-04-25 16:22:19,711 - INFO - dic querying filelist=03+Quintet+in+C+Major+for+Two+Violins+Viola+and+Two+Cellos+D+956+III+Scherzo+Presto+Trio+Andante+sostenuto+flac&action=browse
+2021-04-25 16:22:20,406 - INFO - found, torrentid=49506
+2021-04-25 16:22:21,517 - INFO - saving to /home7/fishpear/results/torrents/55 Schubert and Boccherini String Quintets.torrent
+...
 ```
 
 ## Bug report and feature request

@@ -33,6 +33,10 @@ English Version of README: [README-en.md](https://github.com/qfishpear/fishrss/b
   - [扫描文件夹辅种`reseed.py`](#扫描文件夹辅种reseedpy)
     - [填写配置信息](#填写配置信息-3)
     - [运行](#运行-3)
+      - [方法1：扫描所有子文件夹](#方法1扫描所有子文件夹)
+      - [方法2：扫描单个文件夹](#方法2扫描单个文件夹)
+      - [方法3：扫描种子文件夹](#方法3扫描种子文件夹)
+      - [方法4：扫描单个种子](#方法4扫描单个种子)
     - [辅种结果](#辅种结果)
     - [参数解释](#参数解释-2)
     - [部分log节选](#部分log节选-2)
@@ -337,7 +341,9 @@ python3 remove_unregistered.py
 2021-04-14 11:02:14,533 - INFO - removing torrent "Headnodic - Tuesday (2002) - WEB FLAC" reason: "flacsfor.me: Error: Unregistered torrent"
 ```
 ## 扫描文件夹辅种`reseed.py`
-本脚本会扫描给定文件夹下的所有子文件夹，在给定站点里搜索所有这些文件夹可以的种子。
+本脚本会扫描给定文件夹下的所有子文件夹，在指定站点里搜索所有这些文件夹可以辅种的种子。
+
+本脚本也可以扫描给定文件夹内的所有种子，并寻找指定站点内对应的可以辅种的种子。
 
 注意：由于自动化的搜索方式不能面面俱到，不代表所有搜到的种子都可以正确辅种，也不代表所有没搜到的文件夹无法辅种。少数搜索到的种子可能出现文件名重命名以及其他不可预知的问题，辅种时请在添加前关闭自动开始下载。
 
@@ -346,19 +352,45 @@ python3 remove_unregistered.py
 
 ### 运行
 
+运行到一半时退出，下次重新执行的时候会跳过上次扫描过的文件夹，如果不想跳过想重新扫描，请删除`--result-dir`所指定的文件夹下的`scan_history.txt`文件。
+
+请注意路径名里带空格或者其他奇怪字符的时候要进行转义，推荐使用tab输入这些长目录。
+
+#### 方法1：扫描所有子文件夹
+
 假如你的音乐文件存在文件夹`~/downloads`下，你要为海豚辅种，辅种的所有结果存在文件夹`~/results`下，则运行
 ```
 python3 reseed.py --site dic --dir ~/downloads --result-dir ~/results
 ```
 即可。注意`--result-dir`所带的文件夹必须已经创建好。
 
-运行到一半时退出，下次重新执行的时候会跳过上次扫描过的文件夹，如果不想跳过想重新扫描，请删除`--result-dir`所指定的文件夹下的`scan_history.txt`文件。
+#### 方法2：扫描单个文件夹
 
-你也可以用`--single-dir`为单个文件夹辅种，样例：假如你有一个下好了的种子存在`~/downloads/Masashi Sada (さだまさし) - さだ丼～新自分風土記III～ (2021) [24-96]/	`里，则运行：
+你也可以用`--single-dir`为单个文件夹辅种
+
+样例：假如你有一个下好了的种子存在`~/downloads/Masashi Sada (さだまさし) - さだ丼～新自分風土記III～ (2021) [24-96]/	`里，则运行：
 ```
 python3 reseed.py --site dic --single-dir ~/downloads/Masashi\ Sada\ \(さだまさし\)\ -\ さだ丼～新自分風土記III～\ \(2021\)\ \[24-96\]/ --result-dir ~/results
 ```
-请注意路径名里带空格或者其他奇怪字符的时候要进行转义，推荐使用tab输入这些长目录。
+
+#### 方法3：扫描种子文件夹
+
+`--torrent-dir`为文件夹内所有种子文件搜索站点内可辅种的种子
+
+样例：假如有若干种子存在`~/torrents`里，则运行
+```
+python3 reseed.py --site dic --torrent-dir ~/torrents --result-dir ~/results
+```
+
+#### 方法4：扫描单个种子
+
+`--single-torrent`为单个种子文件搜索站点内可辅种的种子
+
+样例：假如有一个种子`~/torrents/The Call - Collected - 2019 (CD - FLAC - Lossless).torrent`，则运行
+
+```
+python3 reseed.py --site dic --single-torrent ~/torrents/The\ Call\ -\ Collected\ -\ 2019\ \(CD\ -\ FLAC\ -\ Lossless\).torrent --result-dir ~/results
+```
 
 ### 辅种结果
 
@@ -370,8 +402,10 @@ python3 reseed.py --site dic --single-dir ~/downloads/Masashi\ Sada\ \(さだま
 * `scan_history.txt`，曾经扫描过的文件夹，一行一个，你如果运行了一半意外退出了的话，重新运行会跳过这里面记录的扫描过的文件夹
 
 ### 参数解释
-* `--dir`，批量辅种所在音乐文件所在的总文件夹
+* `--dir` 批量辅种所在音乐文件所在的总文件夹
 * `--single-dir` 扫描单个种子辅种时的音乐文件所在文件夹
+* `--torrent-dir` 批量扫描种子文件辅种时所有.torrent文件所在文件夹
+* `--single-torrent` 扫描单个种子文件辅种的种子路径
 * `--site` 对于海豚/RED/OPS/毒蛇分别填dic/red/ops/snake（小写）
 * `--result-dir` 存储扫描出的辅种信息的文件夹
 * `--api-frequency` api调用频率限制。如果你还有其他使用api的脚本在持续运行，为了不超过api频率限制你可以手动指定api调用频率。单位：次每10秒。
@@ -396,6 +430,7 @@ fishpear@sea:~/rss$ python3 reseed.py --site dic --dir ~/downloads --result-dir 
 2021-04-25 16:22:19,711 - INFO - dic querying filelist=03+Quintet+in+C+Major+for+Two+Violins+Viola+and+Two+Cellos+D+956+III+Scherzo+Presto+Trio+Andante+sostenuto+flac&action=browse
 2021-04-25 16:22:20,406 - INFO - found, torrentid=49506
 2021-04-25 16:22:21,517 - INFO - saving to /home7/fishpear/results/torrents/55 Schubert and Boccherini String Quintets.torrent
+...
 ```
 
 ## 向我报bug、提需求
