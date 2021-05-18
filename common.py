@@ -7,6 +7,10 @@ import hashlib
 import urllib
 import bencode
 
+# fix gbk problem on Windows
+import _locale
+_locale._getdefaultlocale = (lambda *args: ['en_US', 'utf8'])
+
 from torrent_filter import TorrentFilter
 from gzapi import REDApi, DICApi, OPSApi, SnakeApi
 from config import CONFIG
